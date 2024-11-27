@@ -1,4 +1,6 @@
+## VitalPay
 
+The VitalPay automated Billing for Healthcare Facilities system is designed to address the inefficiencies of traditional billing and administrative processes in healthcare facilities by providing a modern, integrated solution.
 
 ## SQL Syntax for creating table
 
@@ -17,7 +19,7 @@ CREATE TABLE users (
 );
 ```
 
-## Create deafult admin user
+## Create default admin user
 
 ```sql
 INSERT INTO users (user_id, first_name, last_name, address, username, password, role)

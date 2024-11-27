@@ -1,6 +1,6 @@
 
 
-SQL Syntax for creating table
+## SQL Syntax for creating table
 
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -15,7 +15,9 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-creat admin user
+## Create deafult admin user
 
+```sql
 INSERT INTO users (user_id, first_name, last_name, address, username, password, role)
 VALUES ('A-664784', 'Isaac Rei', 'Aniceta', '2 St. Barangka, Marikina City', 'admin', 'admin123', 'Admin');
+'''''

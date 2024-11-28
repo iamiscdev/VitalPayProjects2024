@@ -2,6 +2,7 @@ package com.tip.edu.cs21s3.b24.view;
 
 import com.tip.edu.cs21s3.b24.controller.UserDBController;
 import com.tip.edu.cs21s3.b24.model.UserModel;
+import com.tip.edu.cs21s3.b24.model.UserSession;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -60,10 +61,11 @@ public final class VitalPayLogin extends JFrame {
             if (user != null) {
                 if ("Admin".equals(user.getRole())) {
 
+                    UserSession.getInstance().setUsername(username);
+                    UserSession.getInstance().setRole(user.getRole());
+                    
                     this.setVisible(false);
                     VitalPayAdmin admin = new VitalPayAdmin();
-                    admin.setName(user.getFirstName() + " " + user.getLastName());
-                    admin.setRole(user.getRole());
                     admin.setVisible(true);
 
                     JOptionPane.showMessageDialog(this, "Login Successful! Welcome, " + user.getUsername() + ".", "Success", JOptionPane.INFORMATION_MESSAGE);

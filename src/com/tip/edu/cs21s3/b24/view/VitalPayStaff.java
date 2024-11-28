@@ -101,5 +101,4 @@ public class VitalPayStaff extends JFrame implements ActionListener {
             login.setVisible(true);
         }
     }
-     
 }

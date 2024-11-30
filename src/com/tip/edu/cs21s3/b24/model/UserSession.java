@@ -3,7 +3,7 @@ package com.tip.edu.cs21s3.b24.model;
 public class UserSession {
     private static UserSession instance;
 
-    private String username;
+    private String userId;
     private String role;
 
     // Private constructor to prevent instantiation
@@ -18,12 +18,12 @@ public class UserSession {
     }
 
     // Setters and Getters for username and role
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserId() {
+        return userId;
     }
 
     public void setRole(String role) {

@@ -1,150 +1,401 @@
 package com.tip.edu.cs21s3.b24.view;
 
-import com.tip.edu.cs21s3.b24.view.VitalPayAdmin;
+import com.tip.edu.cs21s3.b24.controller.UserDBController;
+import com.tip.edu.cs21s3.b24.dialog.CustomDialog;
+import com.tip.edu.cs21s3.b24.model.Constants;
+import com.tip.edu.cs21s3.b24.model.PatientModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
+import javax.swing.border.LineBorder;
 
 public class AddPatient extends JFrame implements ActionListener {
 
-    private JButton addBtn;
-    private JButton backBtn;
-    private JLabel tLabel, idLabel, fnLabel, mnLabel, snLabel, numbLabel, dobLabel, genLabel;
-    private JTextField fnField, mnField, snField, numbField, dobField;
-    private JComboBox<String> idComboBox;
+    private JButton saveBtn, backBtn;
+    private JLabel tLabel, fnLabel, mnLabel, snLabel, numbLabel, dobLabel, addressLabel, bgLabel, genLabel, disLabel, symptomsLabel, diagnosisLabel, medicinesLabel, wardLabel, wardTypeLabel;
+    private JTextField fnField, mnField, snField, numbField, dobField, addressField, bgField, disField, symptomsField, diagnosisField, medicinesField, insuranceField, companyNameField, idCardField;
     private JRadioButton maleRadio, femaleRadio;
     private ButtonGroup genderGroup;
+    private JCheckBox wardCheckBox;
+    private JComboBox<String> wardTypeComboBox;
+
+    private UserDBController db;
 
     public AddPatient() {
-        //Create the main frame
+
+        db = new UserDBController();
+
+        // Create the main frame
         setTitle("New Patient Form");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 500);
-        setLayout(null);
+        setSize(800, 800);
+        setLayout(new BorderLayout());
         setLocationRelativeTo(null);
         setResizable(false);
 
-        //Initialize and add components
-        initializeComponents();
-        add(createButtonPanel());
+        // Initialize and add components
+        add(createTitlePanel(), BorderLayout.PAGE_START);
+        add(createFormPanel(), BorderLayout.CENTER);
 
         setVisible(true);
     }
 
-    private void initializeComponents() {
-        //Title label
+    private JPanel createTitlePanel() {
+        JPanel titlePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                GradientPaint gradient = new GradientPaint(0, 0, new Color(0, 150, 136), getWidth(), 0, new Color(115, 147, 179));
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        titlePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 35)); // Center components in the panel
+        titlePanel.setPreferredSize(new Dimension(getWidth(), 100));
+
+        // Initialize and customize the JLabel
         tLabel = new JLabel("NEW PATIENT FORM");
-        tLabel.setFont(new Font("Poppins", Font.BOLD, 20));
-        tLabel.setBounds(200, 10, 300, 30);
-        add(tLabel);
+        tLabel.setFont(new Font("Poppins", Font.BOLD, 24));
+        tLabel.setForeground(Color.WHITE);
 
-        //ID label and combo box
-        idLabel = new JLabel("ID:");
-        idLabel.setBounds(50, 60, 100, 20);
-        add(idLabel);
+        // Add label to the titlePanel
+        titlePanel.add(tLabel);
 
-        String[] idOptions = {"ViCard", "Barangay ID"};
-        idComboBox = new JComboBox<>(idOptions);
-        idComboBox.setBounds(150, 60, 150, 25);
-        add(idComboBox);
+        return titlePanel;
+    }
 
-        //First name
+    private JPanel createFormPanel() {
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(null);  // Manual positioning
+
+        // Initialize and add components to the panel
         fnLabel = new JLabel("First Name:");
         fnLabel.setBounds(50, 100, 100, 20);
-        add(fnLabel);
+        formPanel.add(fnLabel);
 
         fnField = new JTextField();
+        fnField.setPreferredSize(new Dimension(200, 30));
+        fnField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1)); // Set teal green border for JTextField
         fnField.setBounds(150, 100, 150, 25);
-        add(fnField);
+        formPanel.add(fnField);
 
-        //Middle name
         mnLabel = new JLabel("Middle Name:");
         mnLabel.setBounds(50, 140, 100, 20);
-        add(mnLabel);
+        formPanel.add(mnLabel);
 
         mnField = new JTextField();
+        mnField.setPreferredSize(new Dimension(200, 30));
+        mnField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
         mnField.setBounds(150, 140, 150, 25);
-        add(mnField);
+        formPanel.add(mnField);
 
-        //Surname
-        snLabel = new JLabel("Surname:");
+        snLabel = new JLabel("Last Name:");
         snLabel.setBounds(50, 180, 100, 20);
-        add(snLabel);
+        formPanel.add(snLabel);
 
         snField = new JTextField();
+        snField.setPreferredSize(new Dimension(200, 30));
+        snField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
         snField.setBounds(150, 180, 150, 25);
-        add(snField);
+        formPanel.add(snField);
 
-        //Phone number
         numbLabel = new JLabel("Phone Number:");
         numbLabel.setBounds(50, 220, 100, 20);
-        add(numbLabel);
+        formPanel.add(numbLabel);
 
         numbField = new JTextField();
+        numbField.setPreferredSize(new Dimension(200, 30));
+        numbField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
         numbField.setBounds(150, 220, 150, 25);
-        add(numbField);
+        formPanel.add(numbField);
 
-        //Date of Birth
         dobLabel = new JLabel("Date of Birth:");
         dobLabel.setBounds(50, 260, 100, 20);
-        add(dobLabel);
+        formPanel.add(dobLabel);
 
         dobField = new JTextField("YYYY-MM-DD");
+        dobField.setPreferredSize(new Dimension(200, 30));
+        dobField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
         dobField.setBounds(150, 260, 150, 25);
-        add(dobField);
+        formPanel.add(dobField);
 
-        //Gender
+        addressLabel = new JLabel("Address:");
+        addressLabel.setBounds(50, 300, 100, 20);
+        formPanel.add(addressLabel);
+
+        addressField = new JTextField();
+        addressField.setPreferredSize(new Dimension(200, 30));
+        addressField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
+        addressField.setBounds(150, 300, 150, 25);
+        formPanel.add(addressField);
+
+        bgLabel = new JLabel("Blood Group:");
+        bgLabel.setBounds(50, 340, 100, 20);
+        formPanel.add(bgLabel);
+
+        bgField = new JTextField();
+        bgField.setPreferredSize(new Dimension(200, 30));
+        bgField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
+        bgField.setBounds(150, 340, 150, 25);
+        formPanel.add(bgField);
+
+        disLabel = new JLabel("Major Diseases (if any):");
+        disLabel.setBounds(50, 380, 200, 20);
+        formPanel.add(disLabel);
+
+        disField = new JTextField();
+        disField.setPreferredSize(new Dimension(200, 30));
+        disField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
+        disField.setBounds(50, 410, 250, 50);
+        formPanel.add(disField);
+
         genLabel = new JLabel("Gender:");
-        genLabel.setBounds(50, 300, 100, 20);
-        add(genLabel);
+        genLabel.setBounds(50, 480, 100, 20);
+        formPanel.add(genLabel);
 
         maleRadio = new JRadioButton("Male");
-        maleRadio.setBounds(150, 300, 70, 20);
+        maleRadio.setBounds(150, 480, 70, 20);
         femaleRadio = new JRadioButton("Female");
-        femaleRadio.setBounds(220, 300, 80, 20);
+        femaleRadio.setBounds(220, 480, 80, 20);
 
         genderGroup = new ButtonGroup();
         genderGroup.add(maleRadio);
         genderGroup.add(femaleRadio);
 
-        add(maleRadio);
-        add(femaleRadio);
-    }
+        formPanel.add(maleRadio);
+        formPanel.add(femaleRadio);
 
-    private JPanel createButtonPanel() {
-        JPanel btnPanel = new JPanel();
-        btnPanel.setLayout(new GridLayout(1, 2, 10, 10));
-        btnPanel.setBounds(150, 400, 250, 40);
+        symptomsLabel = new JLabel("Symptoms:");
+        symptomsLabel.setBounds(400, 100, 100, 20);
+        formPanel.add(symptomsLabel);
 
-        //Buttons
-        addBtn = createButton("Add");
-        backBtn = createButton("Back");
+        symptomsField = new JTextField();
+        symptomsField.setPreferredSize(new Dimension(200, 30));
+        symptomsField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
+        symptomsField.setBounds(500, 100, 200, 25);
+        formPanel.add(symptomsField);
 
-        //Action listeners
+        diagnosisLabel = new JLabel("Diagnosis:");
+        diagnosisLabel.setBounds(400, 140, 100, 20);
+        formPanel.add(diagnosisLabel);
+
+        diagnosisField = new JTextField();
+        diagnosisField.setPreferredSize(new Dimension(200, 30));
+        diagnosisField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
+        diagnosisField.setBounds(500, 140, 200, 25);
+        formPanel.add(diagnosisField);
+
+        medicinesLabel = new JLabel("Medicines:");
+        medicinesLabel.setBounds(400, 180, 100, 20);
+        formPanel.add(medicinesLabel);
+
+        medicinesField = new JTextField();
+        medicinesField.setPreferredSize(new Dimension(200, 30));
+        medicinesField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
+        medicinesField.setBounds(500, 180, 200, 25);
+        formPanel.add(medicinesField);
+
+        wardLabel = new JLabel("Ward Required?");
+        wardLabel.setBounds(400, 220, 150, 25);
+        formPanel.add(wardLabel);
+
+        wardCheckBox = new JCheckBox("YES");
+        wardCheckBox.setPreferredSize(new Dimension(200, 30));
+        wardCheckBox.setBackground(new Color(0, 150, 136)); // Set background color to Teal
+        wardCheckBox.setFocusPainted(false); // Remove the default focus border
+        wardCheckBox.setForeground(Color.WHITE); // White text color
+        wardCheckBox.setOpaque(true); // Ensure it has a solid background
+        wardCheckBox.setBorder(BorderFactory.createLineBorder(new Color(0, 150, 136), 2, true)); // Border color
+        wardCheckBox.setBounds(550, 220, 50, 25);
+        wardCheckBox.addActionListener(this);
+        formPanel.add(wardCheckBox);
+
+        wardTypeLabel = new JLabel("Type of Ward:");
+        wardTypeLabel.setBounds(400, 260, 150, 25);
+        wardTypeLabel.setVisible(false);
+        formPanel.add(wardTypeLabel);
+
+        wardTypeComboBox = new JComboBox<>(new String[]{"General", "Single", "Duo"});
+        wardTypeComboBox.setPreferredSize(new Dimension(200, 30));
+        wardTypeComboBox.setBackground(Constants.PRIMARY_COLOR); // Set background color of JComboBox to Teal
+        wardTypeComboBox.setForeground(Constants.TEXT_COLOR);  // Set text color for items in JComboBox
+
+        // Customize the List (inside JComboBox)
+        wardTypeComboBox.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
+            @Override
+            protected JButton createArrowButton() {
+                JButton arrowButton = super.createArrowButton();
+                arrowButton.setBackground(Constants.PRIMARY_COLOR);  // Set arrow button background to match
+                return arrowButton;
+            }
+        });
+
+        // Set the divider color (line between items) to teal green
+        wardTypeComboBox.setBorder(BorderFactory.createLineBorder(Constants.PRIMARY_COLOR));
+
+        wardTypeComboBox.setVisible(false);
+        wardTypeComboBox.setBounds(550, 260, 150, 25);
+        formPanel.add(wardTypeComboBox);
+
+        JLabel insuranceLabel = new JLabel("Insurance Provider:");
+        insuranceLabel.setBounds(400, 300, 150, 25);
+        formPanel.add(insuranceLabel);
+
+        insuranceField = new JTextField();
+        insuranceField.setPreferredSize(new Dimension(200, 30));
+        insuranceField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
+        insuranceField.setBounds(550, 300, 200, 25);
+        formPanel.add(insuranceField);
+
+        JLabel companyNameLabel = new JLabel("Company Name:");
+        companyNameLabel.setBounds(400, 340, 150, 25);
+        formPanel.add(companyNameLabel);
+
+        companyNameField = new JTextField();
+        companyNameField.setPreferredSize(new Dimension(200, 30));
+        companyNameField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
+        companyNameField.setBounds(550, 340, 200, 25);
+        formPanel.add(companyNameField);
+
+        JLabel idCardLabel = new JLabel("ID Card:");
+        idCardLabel.setBounds(400, 380, 150, 25);
+        formPanel.add(idCardLabel);
+
+        idCardField = new JTextField();
+        idCardField.setPreferredSize(new Dimension(200, 30));
+        idCardField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
+        idCardField.setBounds(550, 380, 200, 25);
+        formPanel.add(idCardField);
+
+        // Buttons
+        // Save Details Button
+        saveBtn = new JButton("Save");
+        saveBtn.setPreferredSize(new Dimension(120, 40));
+        saveBtn.setBackground(Constants.PRIMARY_COLOR);
+        saveBtn.setForeground(Constants.TEXT_COLOR);
+        saveBtn.setFocusPainted(false);
+        saveBtn.setFont(new Font("Poppins", Font.BOLD, 14));
+        saveBtn.setBounds(250, 530, 120, 40);
+
+        // Back Button
+        backBtn = new JButton("Back");
+        backBtn.setPreferredSize(new Dimension(120, 40));
+        backBtn.setBackground(Constants.SECONDARY_COLOR);
+        backBtn.setForeground(Constants.TEXT_COLOR);
+        backBtn.setFocusPainted(false);
+        backBtn.setFont(new Font("Poppins", Font.BOLD, 14));
+        backBtn.setBounds(390, 530, 120, 40);
+
+        // Action listeners
+        saveBtn.addActionListener(this);
         backBtn.addActionListener(this);
 
-        //Add buttons to the panel
-        btnPanel.add(addBtn);
-        btnPanel.add(backBtn);
+        // Add buttons to the panel
+        formPanel.add(saveBtn);
+        formPanel.add(backBtn);
 
-        return btnPanel;
-    }
-
-    private JButton createButton(String text) {
-        JButton button = new JButton(text);
-        button.setFocusable(false);
-        return button;
+        return formPanel;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == backBtn) {
-            this.setVisible(false);
-            //new VitalPayAdmin().setVisible(true);
+        if (e.getSource() == saveBtn) {
+            // Extract data from user inputs
+            String firstName = fnField.getText();
+            String middleName = mnField.getText();
+            String lastName = snField.getText();
+            String phoneNumber = numbField.getText();
+            String dob = dobField.getText();
+            String address = addressField.getText();
+            String bloodGroup = bgField.getText();
+            String diseases = disField.getText();
+            String symptoms = symptomsField.getText();
+            String diagnosis = diagnosisField.getText();
+            String medicines = medicinesField.getText();
+            boolean wardRequired = wardCheckBox.isSelected();
+            String wardType = wardRequired ? (String) wardTypeComboBox.getSelectedItem() : "None";
+            String insuranceProvider = insuranceField.getText();
+            String companyName = companyNameField.getText();
+            String idCard = idCardField.getText();
+            boolean genderMale = maleRadio.isSelected();
+
+            // Validate inputs (optional but recommended)
+            if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty() || dob.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill in all required fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Create the PatientModel object
+            PatientModel patient = new PatientModel(
+                    generatePatientId(6), // Generate a unique patient ID
+                    firstName,
+                    middleName,
+                    lastName,
+                    phoneNumber,
+                    dob,
+                    address,
+                    genderMale,
+                    bloodGroup,
+                    diseases,
+                    symptoms,
+                    diagnosis,
+                    medicines,
+                    wardRequired,
+                    wardType,
+                    insuranceProvider,
+                    companyName,
+                    idCard,
+                    false // Adjust this field if needed
+            );
+            
+            if (db.insertPatient(patient)) {
+                
+                 CustomDialog.showMessage(
+                            this,
+                            "Patient added successfully" ,
+                            "Success",
+                            "success"
+                    );
+
+                    this.setVisible(false);
+                    VitalPayAdmin.reloadTableData();
+                    
+            } else {
+                CustomDialog.showMessage(
+                            this,
+                            "Adding patient unsuccessful",
+                            "Error",
+                            "error"
+                    );
+            }
+
+        } else if (e.getSource() == backBtn) {
+            this.dispose();
+        } else if (e.getSource() == wardCheckBox) {
+            // Toggle visibility of ward type
+            boolean isChecked = wardCheckBox.isSelected();
+            wardTypeLabel.setVisible(isChecked);
+            wardTypeComboBox.setVisible(isChecked);
         }
     }
 
+    private String generatePatientId(int length) {
+        String characters = "0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+
+        sb.append("P-");
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+
+        return sb.toString();
+    }
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(AddPatient::new);
     }

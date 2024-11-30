@@ -1,6 +1,6 @@
 package com.tip.edu.cs21s3.b24.view;
 
-import com.tip.edu.cs21s3.b24.model.UserModel;
+import com.tip.edu.cs21s3.b24.model.UserStaffModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,9 +11,9 @@ public class VitalPayStaff extends JFrame implements ActionListener {
     private JButton patientButton;
     private JButton archiveButton;
     private JButton logoutButton;
-    private UserModel staff;
+    private UserStaffModel staff;
        
-    public VitalPayStaff(UserModel staff){
+    public VitalPayStaff(UserStaffModel staff){
         this.staff = staff;
         
         // Frame ng mismong system siyempre
@@ -61,7 +61,7 @@ public class VitalPayStaff extends JFrame implements ActionListener {
         usernameLabel.setBounds(20, 20, 80, 20);
         infoPanel.add(usernameLabel);
 
-        JLabel usernameValue = new JLabel(staff.getUsername());
+        JLabel usernameValue = new JLabel(staff.getFirstName() + " " + staff.getLastName());
         usernameValue.setFont(new Font("Arial", Font.BOLD, 14));
         usernameValue.setForeground(Color.RED);
         usernameValue.setBounds(120, 20, 100, 20);
@@ -101,4 +101,5 @@ public class VitalPayStaff extends JFrame implements ActionListener {
             login.setVisible(true);
         }
     }
+   
 }

@@ -372,7 +372,7 @@ public class AddPatient extends JFrame implements ActionListener {
                 );
 
                 this.setVisible(false);
-                VitalPayAdmin.reloadTableData();
+                AdminDashboard.reloadTableData();
 
             } else {
                 CustomDialog.showMessage(

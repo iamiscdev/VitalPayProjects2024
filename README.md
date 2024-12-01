@@ -42,6 +42,7 @@ CREATE TABLE patients (
     insurance_provider VARCHAR(255),
     company_name VARCHAR(255),
     id_card VARCHAR(255),
+    created_by VARCHAR(255) NOT NULL,
     archive TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -58,6 +59,6 @@ VALUES ('A-664784', 'Isaac Rei', 'Aniceta', '2 St. Barangka, Marikina City', 'ad
 ## Create row patient
 
 ```sql
-INSERT INTO patients (patient_id, first_name, middle_name, last_name, phone, date_of_birth, address, gender, blood_group, major_diseases, symptoms, diagnosis, medicines, ward_required, type_of_ward, insurance_provider, company_name, id_card, archive) 
-VALUES ('P-123456', 'John', 'A.', 'Doe', '123-456-7890', '1990-05-15', '123 Elm Street', 1, 'O+', 'Hypertension', 'Headache, Fatigue', 'Migraine', 'Paracetamol, Ibuprofen', 1, 'General Ward', 'HealthCare Inc.', 'Global Tech Solutions', 'ID12345678', 0);
+INSERT INTO patients (patient_id, first_name, middle_name, last_name, phone, date_of_birth, address, gender, blood_group, major_diseases, symptoms, diagnosis, medicines, ward_required, type_of_ward, insurance_provider, company_name, id_card, created_by, archive) 
+VALUES ('P-123456', 'John', 'A.', 'Doe', '123-456-7890', '1990-05-15', '123 Elm Street', 1, 'O+', 'Hypertension', 'Headache, Fatigue', 'Migraine', 'Paracetamol, Ibuprofen', 1, 'General Ward', 'HealthCare Inc.', 'Global Tech Solutions', 'ID12345678', 'A-664784', 0);
 ```

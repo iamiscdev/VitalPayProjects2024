@@ -7,12 +7,13 @@
             <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/view/AddStaff.java</file>
             <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/view/VitalPayReport.java</file>
             <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/model/PatientModel.java</file>
-            <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/view/VitalPayAdmin.java</file>
+            <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/view/StaffDashboard.java</file>
+            <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/view/AdminDashboard.java</file>
+            <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/model/UserSession.java</file>
             <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/view/AddPatient.java</file>
             <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/controller/UserDBController.java</file>
             <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/view/VitalPayLogin.java</file>
             <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/view/VitalPayPatientMeds.java</file>
-            <file>file:/G:/NetBeansProjects/VitalPayProjects2024/src/com/tip/edu/cs21s3/b24/view/VitalPayStaff.java</file>
         </group>
     </open-files>
 </project-private>

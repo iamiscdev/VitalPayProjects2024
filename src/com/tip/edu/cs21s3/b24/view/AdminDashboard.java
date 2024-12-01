@@ -14,7 +14,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-public final class VitalPayAdmin extends JFrame implements ActionListener {
+public final class AdminDashboard extends JFrame implements ActionListener {
 
     private JButton searchBtn, registerBtn, reportBtn, addPatientBtn, logoutBtn;
     private JLabel userNameValue, userTypeValue;
@@ -30,7 +30,7 @@ public final class VitalPayAdmin extends JFrame implements ActionListener {
 
     private static boolean isStaffView = true;
 
-    public VitalPayAdmin() {
+    public AdminDashboard() {
         db = new UserDBController();
 
         // Frame settings
@@ -169,7 +169,7 @@ public final class VitalPayAdmin extends JFrame implements ActionListener {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(viewStaffBtn);
         buttonPanel.add(viewPatientBtn);
-
+        
         tablePanel.add(buttonPanel, BorderLayout.NORTH);
 
         if (isStaffView) {
@@ -366,8 +366,7 @@ public final class VitalPayAdmin extends JFrame implements ActionListener {
         }
 
         private void handleArchiveAction(int row) {
-            JTable table = VitalPayAdmin.userTable; // Reference the JTable
-            String Id = table.getValueAt(row, 0).toString(); // Get the value in in column 0
+            String Id = userTable.getValueAt(row, 0).toString(); // Get the value in in column 0
 
             if (isStaffView) {
                 System.out.println("Archiving user with ID: " + Id);
@@ -375,7 +374,7 @@ public final class VitalPayAdmin extends JFrame implements ActionListener {
                 // Confirm deletion
                 boolean confirmed = CustomDialog.showConfirm(
                         null,
-                        "Are you sure you want to archive this user?",
+                        "Are you sure you want to archive this patient?",
                         "Archiving Confirmation"
                 );
 

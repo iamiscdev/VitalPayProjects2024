@@ -87,12 +87,13 @@ public final class VitalPayLogin extends JFrame {
         UserStaffModel user = db.getUserStaffByUserPass(userId, password);
 
         if (user != null) {
-            if ("Admin".equals(user.getRole())) {
-                UserSession.getInstance().setUserId(String.format("%s %s (%s)", user.getFirstName(), user.getLastName(), userId));
-                UserSession.getInstance().setRole(user.getRole());
 
-                this.setVisible(false);
-                VitalPayAdmin admin = new VitalPayAdmin();
+            UserSession.getInstance().setUserId(String.format("%s %s (%s)", user.getFirstName(), user.getLastName(), userId));
+            UserSession.getInstance().setRole(user.getRole());
+            
+            if ("Admin".equals(user.getRole())) {
+                this.dispose();
+                AdminDashboard admin = new AdminDashboard();
                 admin.setVisible(true);
 
                 CustomDialog.showMessage(
@@ -103,7 +104,8 @@ public final class VitalPayLogin extends JFrame {
                 );
 
             } else {
-                VitalPayStaff dashboard = new VitalPayStaff(user);
+                this.dispose();
+                StaffDashboard dashboard = new StaffDashboard(user);
                 dashboard.setVisible(true);
             }
         } else {

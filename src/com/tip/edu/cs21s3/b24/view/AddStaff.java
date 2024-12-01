@@ -180,7 +180,7 @@ public class AddStaff extends JFrame {
                     );
 
                     this.setVisible(false);
-                    VitalPayAdmin.reloadTableData();
+                    AdminDashboard.reloadTableData();
                 } else {
 
                     CustomDialog.showMessage(

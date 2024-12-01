@@ -176,7 +176,6 @@ public class VitalPayPatientMeds extends JFrame implements ActionListener {
             balanceField.setText("");
         } else if (e.getSource() == backBtn) {
             this.dispose();
-            new VitalPayAdmin().setVisible(true);
         }
     }
 

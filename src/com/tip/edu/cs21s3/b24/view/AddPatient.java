@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Random;
 import javax.swing.border.LineBorder;
 
@@ -29,12 +31,21 @@ public class AddPatient extends JFrame implements ActionListener {
 
         // Create the main frame
         setTitle("New Patient Form");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 800);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
         setResizable(false);
-
+        
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        // Add a window listener to detect when the close (X) button is clicked
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Close the frame only when the close (X) button is clicked
+                dispose();
+            }
+        });
+        
         // Initialize and add components
         add(createTitlePanel(), BorderLayout.PAGE_START);
         add(createFormPanel(), BorderLayout.CENTER);
@@ -350,26 +361,26 @@ public class AddPatient extends JFrame implements ActionListener {
                     idCard,
                     false // Adjust this field if needed
             );
-            
-            if (db.insertPatient(patient)) {
-                
-                 CustomDialog.showMessage(
-                            this,
-                            "Patient added successfully" ,
-                            "Success",
-                            "success"
-                    );
 
-                    this.setVisible(false);
-                    VitalPayAdmin.reloadTableData();
-                    
+            if (db.insertPatient(patient)) {
+
+                CustomDialog.showMessage(
+                        this,
+                        "Patient added successfully",
+                        "Success",
+                        "success"
+                );
+
+                this.setVisible(false);
+                VitalPayAdmin.reloadTableData();
+
             } else {
                 CustomDialog.showMessage(
-                            this,
-                            "Adding patient unsuccessful",
-                            "Error",
-                            "error"
-                    );
+                        this,
+                        "Adding patient unsuccessful",
+                        "Error",
+                        "error"
+                );
             }
 
         } else if (e.getSource() == backBtn) {
@@ -395,7 +406,7 @@ public class AddPatient extends JFrame implements ActionListener {
 
         return sb.toString();
     }
-    
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(AddPatient::new);
     }

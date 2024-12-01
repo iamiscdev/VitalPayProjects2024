@@ -9,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class VitalPayReport extends JFrame implements ActionListener {
 
@@ -21,12 +23,21 @@ public class VitalPayReport extends JFrame implements ActionListener {
     public VitalPayReport() {
         // Create the main frame
         setTitle("General Report");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 500);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
         setResizable(false);
 
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        // Add a window listener to detect when the close (X) button is clicked
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Close the frame only when the close (X) button is clicked
+                dispose();
+            }
+        });
+        
         // Initialize and add components
         initializeComponents();
 

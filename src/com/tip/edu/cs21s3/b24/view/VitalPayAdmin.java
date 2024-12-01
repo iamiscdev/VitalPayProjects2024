@@ -119,6 +119,7 @@ public final class VitalPayAdmin extends JFrame implements ActionListener {
         JLabel nameLabel = new JLabel("Name (User Id): ");
         nameLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
         nameLabel.setForeground(Color.WHITE);
+        
         JLabel userNameValue = new JLabel(username);
         userNameValue.setFont(new Font("Poppins", Font.BOLD, 14));
         userNameValue.setForeground(Color.YELLOW);
@@ -337,7 +338,7 @@ public final class VitalPayAdmin extends JFrame implements ActionListener {
             editPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
             // Initialize buttons
-            editButton = createStyledButton("Edit");
+            editButton = createStyledButton(isStaffView ? "Edit": "Precribe");
             archiveButton = createStyledButton("Archive");
 
             // Add buttons to the edit panel
@@ -349,7 +350,7 @@ public final class VitalPayAdmin extends JFrame implements ActionListener {
             archiveButton.addActionListener(e -> handleArchiveAction(currentRow));
 
             // Create render buttons (non-clickable)
-            renderPanel.add(createStyledButton("Edit", false));
+            renderPanel.add(createStyledButton(isStaffView ? "Edit": "Precribe", false));
             renderPanel.add(createStyledButton("Archive", false));
         }
 
@@ -358,6 +359,7 @@ public final class VitalPayAdmin extends JFrame implements ActionListener {
                 System.out.println("Editing user at row: " + row);
             } else {
                 System.out.println("Editing patient at row: " + row);
+                new VitalPayPatientMeds().setVisible(true);
             }
 
             fireEditingStopped(); // Commit edit and close editor

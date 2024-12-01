@@ -6,6 +6,8 @@ import com.tip.edu.cs21s3.b24.model.Constants;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Random;
 
 public class AddStaff extends JFrame {
@@ -27,11 +29,20 @@ public class AddStaff extends JFrame {
 
         setTitle("Vital Pay - Add Staff");
         setSize(600, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(new BorderLayout());
 
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        // Add a window listener to detect when the close (X) button is clicked
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Close the frame only when the close (X) button is clicked
+                dispose();
+            }
+        });
+        
         // Title Panel (same style as in VitalPayLogin and VitalPayAdmin)
         JPanel titlePanel = new JPanel() {
             @Override

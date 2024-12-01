@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class VitalPayPatientMeds extends JFrame implements ActionListener {
     private JTextField patientIdField, payField, balanceField;
@@ -17,13 +19,22 @@ public class VitalPayPatientMeds extends JFrame implements ActionListener {
     private JButton addDrugBtn, removeDrugBtn, addTestBtn, removeTestBtn, generateBillBtn, clearBtn, backBtn;
 
     public VitalPayPatientMeds() {
-        setTitle("Generate Bill");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Prescribe Patient");
         setSize(900, 800);
         setLayout(null);
         setLocationRelativeTo(null);
         setResizable(false);
-
+ 
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        // Add a window listener to detect when the close (X) button is clicked
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Close the frame only when the close (X) button is clicked
+                dispose();
+            }
+        });
+        
         initializeComponents();
         setVisible(true);
     }

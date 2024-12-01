@@ -48,9 +48,16 @@ CREATE TABLE patients (
 );
 ```
 
-## Create default admin user
+## Create row admin user
 
 ```sql
 INSERT INTO users (user_id, first_name, last_name, address, username, password, role, archive)
 VALUES ('A-664784', 'Isaac Rei', 'Aniceta', '2 St. Barangka, Marikina City', 'admin123', 'Admin', 'no');
+```
+
+## Create row patient
+
+```sql
+INSERT INTO patients (patient_id, first_name, middle_name, last_name, phone, date_of_birth, address, gender, blood_group, major_diseases, symptoms, diagnosis, medicines, ward_required, type_of_ward, insurance_provider, company_name, id_card, archive) 
+VALUES ('P-123456', 'John', 'A.', 'Doe', '123-456-7890', '1990-05-15', '123 Elm Street', 1, 'O+', 'Hypertension', 'Headache, Fatigue', 'Migraine', 'Paracetamol, Ibuprofen', 1, 'General Ward', 'HealthCare Inc.', 'Global Tech Solutions', 'ID12345678', 0);
 ```

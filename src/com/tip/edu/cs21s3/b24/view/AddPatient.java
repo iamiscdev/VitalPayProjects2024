@@ -31,20 +31,12 @@ public class AddPatient extends JFrame implements ActionListener {
 
         // Create the main frame
         setTitle("New Patient Form");
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setSize(800, 800);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
         setResizable(false);
         
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        // Add a window listener to detect when the close (X) button is clicked
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                // Close the frame only when the close (X) button is clicked
-                dispose();
-            }
-        });
         
         // Initialize and add components
         add(createTitlePanel(), BorderLayout.PAGE_START);
@@ -69,7 +61,7 @@ public class AddPatient extends JFrame implements ActionListener {
 
         // Initialize and customize the JLabel
         tLabel = new JLabel("NEW PATIENT FORM");
-        tLabel.setFont(new Font("Poppins", Font.BOLD, 24));
+        tLabel.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 24));
         tLabel.setForeground(Color.WHITE);
 
         // Add label to the titlePanel
@@ -288,7 +280,7 @@ public class AddPatient extends JFrame implements ActionListener {
         saveBtn.setBackground(Constants.PRIMARY_COLOR);
         saveBtn.setForeground(Constants.TEXT_COLOR);
         saveBtn.setFocusPainted(false);
-        saveBtn.setFont(new Font("Poppins", Font.BOLD, 14));
+        saveBtn.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         saveBtn.setBounds(250, 530, 120, 40);
 
         // Back Button
@@ -297,7 +289,7 @@ public class AddPatient extends JFrame implements ActionListener {
         backBtn.setBackground(Constants.SECONDARY_COLOR);
         backBtn.setForeground(Constants.TEXT_COLOR);
         backBtn.setFocusPainted(false);
-        backBtn.setFont(new Font("Poppins", Font.BOLD, 14));
+        backBtn.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         backBtn.setBounds(390, 530, 120, 40);
 
         // Action listeners

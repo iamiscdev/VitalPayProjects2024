@@ -38,7 +38,7 @@ public final class VitalPayLogin extends JFrame {
 
         // Title Label with primary color
         JLabel titleLabel = new JLabel("Sign In", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Poppins", Font.BOLD, 28));
+        titleLabel.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 28));
         titleLabel.setBackground(Constants.PRIMARY_COLOR);  // Teal color
         titleLabel.setForeground(Constants.PRIMARY_COLOR);  // Teal color
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -67,7 +67,7 @@ public final class VitalPayLogin extends JFrame {
         
         // Forgot Password Label with light gray color and cursor change
         JLabel forgotPasswordLabel = new JLabel("Forgot your password?");
-        forgotPasswordLabel.setFont(new Font("Poppins", Font.PLAIN, 12));
+        forgotPasswordLabel.setFont(new Font(Constants.FONT_STYLE, Font.PLAIN, 12));
         forgotPasswordLabel.setForeground(new Color(150, 150, 150)); // Light gray
         forgotPasswordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         forgotPasswordLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -120,7 +120,7 @@ public final class VitalPayLogin extends JFrame {
 
     // Style the text fields with consistent border color and font
     private void styleTextField(JTextField field) {
-        field.setFont(new Font("Poppins", Font.PLAIN, 14));
+        field.setFont(new Font(Constants.FONT_STYLE, Font.PLAIN, 14));
         field.setBackground(new Color(240, 255, 240)); // Light greenish background
         field.setForeground(Constants.TEXT_COLOR); // Dark gray text
         field.setBorder(BorderFactory.createCompoundBorder(
@@ -131,7 +131,7 @@ public final class VitalPayLogin extends JFrame {
     }
 
     private void styleButton(JButton button) {
-        button.setFont(new Font("Poppins", Font.BOLD, 14));
+        button.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         button.setBackground(Constants.SECONDARY_COLOR);
         button.setForeground(Constants.TEXT_COLOR);
         button.setFocusPainted(false);

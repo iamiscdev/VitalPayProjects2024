@@ -1,8 +1,8 @@
 ## VitalPay
 
-The VitalPay automated Billing for Healthcare Facilities system is designed to address the inefficiencies of traditional billing and administrative processes in healthcare facilities by providing a modern, integrated solution.
+- The VitalPay automated Billing for Healthcare Facilities system is designed to address the inefficiencies of traditional billing and administrative processes in healthcare facilities by providing a modern, integrated solution.
 
-## SQL Syntax for creating users table
+# SQL Syntax for creating users table
 
 ```sql
 CREATE TABLE users (
@@ -19,7 +19,7 @@ CREATE TABLE users (
 );
 ```
 
-## SQL Syntax for creating patients table
+# SQL Syntax for creating patients table
 
 ```sql
 CREATE TABLE patients (
@@ -49,16 +49,52 @@ CREATE TABLE patients (
 );
 ```
 
-## Create row admin user
+# SQL Syntax for creating patients_prescription table
+
+```sql
+CREATE TABLE patients_prescription (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id VARCHAR(8) UNIQUE,
+    drug_code VARCHAR(20) NOT NULL,
+    drug_name VARCHAR(20) NOT NULL,
+    quantity INT NOT NULL,
+    unit_price DOUBLE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+
+# SQL Syntax for creating patients_diagnostics table
+
+```sql
+CREATE TABLE patients_diagnostics (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id VARCHAR(8) UNIQUE,
+    test_name VARCHAR(20) NOT NULL,
+    test_description VARCHAR(50) NOT NULL,
+    test_cost DOUBLE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+# Create columns admin user
 
 ```sql
 INSERT INTO users (user_id, first_name, last_name, address, username, password, role, archive)
 VALUES ('A-664784', 'Isaac Rei', 'Aniceta', '2 St. Barangka, Marikina City', 'admin123', 'Admin', 'no');
 ```
 
-## Create row patient
+# Create columns patient
 
 ```sql
 INSERT INTO patients (patient_id, first_name, middle_name, last_name, phone, date_of_birth, address, gender, blood_group, major_diseases, symptoms, diagnosis, medicines, ward_required, type_of_ward, insurance_provider, company_name, id_card, created_by, archive) 
 VALUES ('P-123456', 'John', 'A.', 'Doe', '123-456-7890', '1990-05-15', '123 Elm Street', 1, 'O+', 'Hypertension', 'Headache, Fatigue', 'Migraine', 'Paracetamol, Ibuprofen', 1, 'General Ward', 'HealthCare Inc.', 'Global Tech Solutions', 'ID12345678', 'A-664784', 0);
+```
+
+
+# Create columns patients_prescription
+
+```sql
+INSERT INTO patients_prescription (patient_id, drug_code, drug_name, quantity, unit_price) 
+VALUES ('P001', 'D001', 'Paracetamol', 10, 5.00), ('P002', 'D002', 'Ibuprofen', 5, 12.50), ('P003', 'D003', 'Amoxicillin', 7, 8.75), ('P001', 'D004', 'Cough Syrup', 2, 20.00), ('P004', 'D005', 'Vitamin C', 30, 2.50);
 ```

@@ -25,7 +25,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
     // Class-level references to track open frames
     private AddStaff addStaffFrame;
     private AddPatient addPatientFrame;
-    private VitalPayPatientMeds addPatientMedsFrame;
+    private VitalPayPatientBilling addPatientMedsFrame;
     private VitalPayReport addReportFrame;
 
     private static boolean isStaffView = true;
@@ -61,7 +61,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
         btnPanel.setPreferredSize(new Dimension(180, getHeight()));
         btnPanel.setBackground(Constants.BACKGROUND_COLOR);
         btnPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
+        
         // Buttons
         searchBtn = createStyledButton("Search");
         registerBtn = createStyledButton("Register (Staff)");
@@ -73,7 +73,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
         registerBtn.addActionListener(this);
         addPatientBtn.addActionListener(this);
         logoutBtn.addActionListener(this);
-
+        
         // Add buttons to panel
         btnPanel.add(searchBtn);
         btnPanel.add(registerBtn);
@@ -104,7 +104,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
 
         // Title label
         JLabel titleLabel = new JLabel("VitalPay Admin Dashboard", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Poppins", Font.BOLD, 21));
+        titleLabel.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 21));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center align
 
@@ -117,11 +117,11 @@ public final class AdminDashboard extends JFrame implements ActionListener {
         JPanel nameRow = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Center align horizontally
         nameRow.setOpaque(false);
         JLabel nameLabel = new JLabel("Name (User Id): ");
-        nameLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
+        nameLabel.setFont(new Font(Constants.FONT_STYLE, Font.PLAIN, 14));
         nameLabel.setForeground(Color.WHITE);
         
         JLabel userNameValue = new JLabel(username);
-        userNameValue.setFont(new Font("Poppins", Font.BOLD, 14));
+        userNameValue.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         userNameValue.setForeground(Color.YELLOW);
         nameRow.add(nameLabel);
         nameRow.add(userNameValue);
@@ -130,10 +130,10 @@ public final class AdminDashboard extends JFrame implements ActionListener {
         JPanel roleRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
         roleRow.setOpaque(false);
         JLabel roleLabel = new JLabel("Role: ");
-        roleLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
+        roleLabel.setFont(new Font(Constants.FONT_STYLE, Font.PLAIN, 14));
         roleLabel.setForeground(Color.WHITE);
         JLabel userRoleValue = new JLabel(userRole);
-        userRoleValue.setFont(new Font("Poppins", Font.BOLD, 14));
+        userRoleValue.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         userRoleValue.setForeground(Color.YELLOW);
         roleRow.add(roleLabel);
         roleRow.add(userRoleValue);
@@ -156,7 +156,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
         tablePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Refresh button
-        JButton viewStaffBtn = createStyledButton2("View Staft");
+        JButton viewStaffBtn = createStyledButton2("View Staff");
         viewStaffBtn.addActionListener(e
                 -> reloadStaffTableData()
         );
@@ -201,9 +201,9 @@ public final class AdminDashboard extends JFrame implements ActionListener {
 
         // Customize table header
         JTableHeader header = userTable.getTableHeader();
-        header.setBackground(new Color(0, 150, 136)); // Teal header background
+        header.setBackground(Constants.PRIMARY_COLOR); // Teal header background
         header.setForeground(Constants.TEXT_COLOR); // White text
-        header.setFont(new Font("Poppins", Font.BOLD, 14));
+        header.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
 
         // Add custom button renderer/editor for Actions column
         userTable.getColumn("Actions").setCellRenderer(new ButtonEditorRenderer());
@@ -302,7 +302,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
     // Create a styled button
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Poppins", Font.BOLD, 14));
+        button.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         button.setBackground(Constants.PRIMARY_COLOR); // Teal background
         button.setForeground(Constants.TEXT_COLOR);
         button.setFocusPainted(false);
@@ -314,7 +314,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
     // Create a styled button
     private JButton createStyledButton2(String text) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Poppins", Font.BOLD, 12));
+        button.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 12));
         button.setPreferredSize(new Dimension(110, 30));
         button.setBackground(Constants.PRIMARY_COLOR); // Teal background
         button.setForeground(Constants.TEXT_COLOR);
@@ -349,9 +349,9 @@ public final class AdminDashboard extends JFrame implements ActionListener {
             editButton.addActionListener(e -> handleEditAction(currentRow));
             archiveButton.addActionListener(e -> handleArchiveAction(currentRow));
 
-            // Create render buttons (non-clickable)
-            renderPanel.add(createStyledButton(isStaffView ? "Edit": "Precribe", false));
-            renderPanel.add(createStyledButton("Archive", false));
+            // Create render buttons
+            renderPanel.add(createStyledButton(isStaffView ? "Edit": "Prescribe", true));
+            renderPanel.add(createStyledButton("Archive", true));
         }
 
         private void handleEditAction(int row) {
@@ -359,7 +359,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
                 System.out.println("Editing user at row: " + row);
             } else {
                 System.out.println("Editing patient at row: " + row);
-                new VitalPayPatientMeds().setVisible(true);
+                new VitalPayPatientBilling().setVisible(true);
             }
 
             fireEditingStopped(); // Commit edit and close editor
@@ -449,7 +449,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
         // Create a styled button with enabled/disabled options
         private JButton createStyledButton(String text, boolean enabled) {
             JButton button = new JButton(text);
-            button.setFont(new Font("Poppins", Font.BOLD, 12));
+            button.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 12));
             button.setBackground(Constants.PRIMARY_COLOR);
             button.setForeground(Constants.TEXT_COLOR);
             button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Padding inside the button

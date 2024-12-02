@@ -88,7 +88,7 @@ public final class StaffDashboard extends JFrame implements ActionListener {
         infoPanel.setOpaque(true);
 
         JLabel titleLabel = new JLabel("VitalPay Staff Dashboard", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Poppins", Font.BOLD, 21));
+        titleLabel.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 21));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -98,10 +98,10 @@ public final class StaffDashboard extends JFrame implements ActionListener {
         JPanel nameRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
         nameRow.setOpaque(false);
         JLabel nameLabel = new JLabel("Name: ");
-        nameLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
+        nameLabel.setFont(new Font(Constants.FONT_STYLE, Font.PLAIN, 14));
         nameLabel.setForeground(Color.WHITE);
         JLabel userNameValue = new JLabel(username);
-        userNameValue.setFont(new Font("Poppins", Font.BOLD, 14));
+        userNameValue.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         userNameValue.setForeground(Color.YELLOW);
         nameRow.add(nameLabel);
         nameRow.add(userNameValue);
@@ -109,10 +109,10 @@ public final class StaffDashboard extends JFrame implements ActionListener {
         JPanel roleRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
         roleRow.setOpaque(false);
         JLabel roleLabel = new JLabel("Role: ");
-        roleLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
+        roleLabel.setFont(new Font(Constants.FONT_STYLE, Font.PLAIN, 14));
         roleLabel.setForeground(Color.WHITE);
         JLabel userRoleValue = new JLabel(userRole);
-        userRoleValue.setFont(new Font("Poppins", Font.BOLD, 14));
+        userRoleValue.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         userRoleValue.setForeground(Color.YELLOW);
         roleRow.add(roleLabel);
         roleRow.add(userRoleValue);
@@ -146,7 +146,7 @@ public final class StaffDashboard extends JFrame implements ActionListener {
         JTableHeader header = patientTable.getTableHeader();
         header.setBackground(new Color(0, 150, 136));
         header.setForeground(Constants.TEXT_COLOR);
-        header.setFont(new Font("Poppins", Font.BOLD, 14));
+        header.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
 
         // Add custom button renderer/editor for Actions column
         patientTable.getColumn("Actions").setCellRenderer(new ButtonEditorRenderer());
@@ -160,7 +160,7 @@ public final class StaffDashboard extends JFrame implements ActionListener {
 
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Poppins", Font.BOLD, 14));
+        button.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         button.setBackground(Constants.PRIMARY_COLOR);
         button.setForeground(Constants.TEXT_COLOR);
         button.setFocusPainted(false);
@@ -219,7 +219,7 @@ public final class StaffDashboard extends JFrame implements ActionListener {
 
         private void handleEditAction(int row) {
             System.out.println("Editing patient at row: " + row);
-            new VitalPayPatientMeds().setVisible(true);
+            new VitalPayPatientBilling().setVisible(true);
 
             fireEditingStopped(); // Commit edit and close editor
         }
@@ -269,7 +269,7 @@ public final class StaffDashboard extends JFrame implements ActionListener {
         // Create a styled button with enabled/disabled options
         private JButton createStyledButton(String text, boolean enabled) {
             JButton button = new JButton(text);
-            button.setFont(new Font("Poppins", Font.BOLD, 12));
+            button.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 12));
             button.setBackground(Constants.PRIMARY_COLOR);
             button.setForeground(Constants.TEXT_COLOR);
             button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Padding inside the button

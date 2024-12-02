@@ -23,20 +23,13 @@ public class VitalPayReport extends JFrame implements ActionListener {
     public VitalPayReport() {
         // Create the main frame
         setTitle("General Report");
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setSize(800, 500);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
         setResizable(false);
 
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        // Add a window listener to detect when the close (X) button is clicked
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                // Close the frame only when the close (X) button is clicked
-                dispose();
-            }
-        });
+        
         
         // Initialize and add components
         initializeComponents();

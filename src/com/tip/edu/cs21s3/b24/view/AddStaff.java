@@ -28,20 +28,11 @@ public class AddStaff extends JFrame {
         db = new UserDBController();
 
         setTitle("Vital Pay - Add Staff");
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setSize(600, 500);
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(new BorderLayout());
-
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        // Add a window listener to detect when the close (X) button is clicked
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                // Close the frame only when the close (X) button is clicked
-                dispose();
-            }
-        });
         
         // Title Panel (same style as in VitalPayLogin and VitalPayAdmin)
         JPanel titlePanel = new JPanel() {

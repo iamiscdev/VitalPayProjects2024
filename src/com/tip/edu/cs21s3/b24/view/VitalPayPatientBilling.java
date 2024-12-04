@@ -1,6 +1,7 @@
 package com.tip.edu.cs21s3.b24.view;
 
 import com.tip.edu.cs21s3.b24.model.Constants;
+import static com.tip.edu.cs21s3.b24.view.AdminDashboard.db;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -25,6 +26,11 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
     private JComboBox<String> planComboBox, roomTypeComboBox;
     private JButton addDrugBtn, removeDrugBtn, addTestBtn, removeTestBtn, generateBillBtn, backBtn;
 
+    public String[] prescriptionColumns = {"Drug Code", "Drug Name", "Quantity", "Unit Price", "Total Cost"};
+    public String[] diagnosticsColumns = {"Test Name", "Test Description", "Cost"};
+    
+    
+        
     public VitalPayPatientBilling() {
         setTitle("Patient Billing");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -84,11 +90,10 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         JLabel prescriptionLabel = new JLabel("Prescription Details:");
         prescriptionLabel.setBounds(30, 50, 200, 25);
         mainPanel.add(prescriptionLabel);
-
-        String[] prescriptionColumns = {"Drug Code", "Drug Name", "Quantity", "Unit Price", "Total Cost"};
-        prescriptionTableModel = new DefaultTableModel(prescriptionColumns, 0);
-        prescriptionTable = new JTable(prescriptionTableModel);
-        prescriptionTable.getTableHeader().setReorderingAllowed(false);
+        
+        
+        fetchPatientPrescription();
+        
         JScrollPane prescriptionScrollPane = new JScrollPane(prescriptionTable);
         prescriptionScrollPane.setBounds(30, 80, 600, 150);
         mainPanel.add(prescriptionScrollPane);
@@ -116,10 +121,10 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         diagnosticsLabel.setBounds(30, 280, 200, 25);
         mainPanel.add(diagnosticsLabel);
 
-        String[] diagnosticsColumns = {"Test Code", "Test Name", "Cost"};
         diagnosticsTableModel = new DefaultTableModel(diagnosticsColumns, 0);
         diagnosticsTable = new JTable(diagnosticsTableModel);
         diagnosticsTable.getTableHeader().setReorderingAllowed(false);
+        
         JScrollPane diagnosticsScrollPane = new JScrollPane(diagnosticsTable);
         diagnosticsScrollPane.setBounds(30, 310, 600, 150);
         mainPanel.add(diagnosticsScrollPane);
@@ -147,7 +152,7 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         roomTypeLabel.setBounds(30, 510, 100, 25);
         mainPanel.add(roomTypeLabel);
 
-        roomTypeComboBox = new JComboBox<>(new String[]{"Ward", "Semi-Private", "Private"});
+        roomTypeComboBox = new JComboBox<>(new String[]{"General", "Semi-Private", "Private"});
         roomTypeComboBox.setBounds(130, 510, 150, 25);
         mainPanel.add(roomTypeComboBox);
 
@@ -184,7 +189,8 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         totalRoomChargesLabel = new JLabel("Total Room Charges: 0");
         totalRoomChargesLabel.setBounds(700, 140, 300, 25);
         mainPanel.add(totalRoomChargesLabel);
-
+        
+        
         vatLabel = new JLabel("VAT: 0");
         vatLabel.setBounds(700, 170, 300, 25);
         mainPanel.add(vatLabel);
@@ -215,6 +221,26 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         mainPanel.add(backBtn);
 
         return mainPanel;
+    }
+    
+    private void fetchPatientPrescription() {
+
+        
+        Object[][] data = db.fetchPatientPrescription("P-123456");
+        prescriptionTableModel = new DefaultTableModel(data, prescriptionColumns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        prescriptionTable = new JTable(prescriptionTableModel);
+
+    }
+    
+    private void fetchPatientDiagnosis() {
+
+        
+
     }
 
     // Button Style Helper Method
@@ -253,8 +279,9 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
                 double unitPrice = Double.parseDouble(unitPriceStr);
                 double totalCost = quantity * unitPrice;
 
-                prescriptionTableModel.addRow(new Object[]{drugCode, drugName, quantity, unitPrice, totalCost});
+                //prescriptionTableModel.addRow(new Object[]{drugCode, drugName, quantity, unitPrice, totalCost});
 
+                fetchPatientDiagnosis();
                 updatePrescriptionTotal();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid input for quantity or unit price.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -356,7 +383,7 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
                 5000;
             case "Semi-Private" ->
                 3000;
-            case "Ward" ->
+            case "General" ->
                 1500;
             default ->
                 0;

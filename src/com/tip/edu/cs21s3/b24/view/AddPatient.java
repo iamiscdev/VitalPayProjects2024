@@ -221,7 +221,7 @@ public class AddPatient extends JFrame implements ActionListener {
         wardTypeLabel.setVisible(false);
         formPanel.add(wardTypeLabel);
 
-        wardTypeComboBox = new JComboBox<>(new String[]{"General", "Single", "Duo"});
+        wardTypeComboBox = new JComboBox<>(new String[]{"General", "Semi-Private", "Private"});
         wardTypeComboBox.setPreferredSize(new Dimension(200, 30));
         wardTypeComboBox.setBackground(Constants.PRIMARY_COLOR); // Set background color of JComboBox to Teal
         wardTypeComboBox.setForeground(Constants.TEXT_COLOR);  // Set text color for items in JComboBox

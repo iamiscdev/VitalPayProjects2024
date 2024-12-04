@@ -21,7 +21,7 @@ public class UserDBController {
     // JDBC connection details
     private static final String DB_URL = "jdbc:mysql://localhost:3306/dbvitalpay?serverTimezone=UTC";
     private static final String DB_USER = "root";
-    private static final String DB_PASS = "3afjWZHRVJUaHAzu";
+    private static final String DB_PASS = "SPPvVcXvZ8Nz2xdD";
 
 
     // Constructor to initialize the controller with a table model
@@ -269,6 +269,67 @@ public class UserDBController {
             return affectedRows > 0; // Return true if the patient was archiving successfully
         } catch (SQLException e) {
             System.err.println("Error archiving patient: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    // Fetch user data from the database
+    public Object[][] fetchPatientPrescription(String patient_id) {
+        ArrayList<Object[]> patientData = new ArrayList<>();
+        
+        // SQL query to fetch data
+        String query = "SELECT patient_id, drug_name, drug_name, quantity, unit_price FROM patients_prescription WHERE patient_id = ?";
+
+        try (Connection conn = connectToDatabase(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, patient_id);
+
+            patientData.clear(); // clear list first
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String patientId = rs.getString("patient_id");
+                    String drugCode = rs.getString("drug_code");
+                    String drugName = rs.getString("drug_name");
+                    int quantity = rs.getInt("quantity");
+                    double unitPrice = rs.getDouble("unit_price");
+                    double totalCost = quantity * unitPrice;
+
+                    // Print row data
+                    patientData.add(new Object[]{drugCode, drugName, quantity, unitPrice, totalCost});
+                } else {
+                    System.out.println("User not found.");
+                    return null;  // Return null if no user found
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;  // Return null in case of any SQL error
+        }
+        
+        // Convert List to a array
+        return patientData.toArray(new Object[0][0]); // Conversion to Object[][] for JTable compatibility
+    }
+    
+    public boolean insertPatientPrescription(String patientId, String drugCode, String drugName, int quantity, Double unitPrice) {
+        // SQL INSERT query
+        String query = "INSERT INTO patients_prescription (patient_id, drug_code, drug_name, quantity, unit_price) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection con = connectToDatabase();
+             PreparedStatement preparedStatement = con.prepareStatement(query)) {
+
+            // Set values for placeholders
+            preparedStatement.setString(1, patientId);
+            preparedStatement.setString(2, drugCode);
+            preparedStatement.setString(3, drugName);
+            preparedStatement.setInt(4, quantity);
+            preparedStatement.setDouble(5, unitPrice);
+
+            // Execute the INSERT query
+            int rowsInserted = preparedStatement.executeUpdate();
+            return rowsInserted > 0;
+
+        } catch (Exception e) {
+            System.err.println("Error inserting patient: " + e.getMessage());
             return false;
         }
     }

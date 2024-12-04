@@ -21,8 +21,11 @@ public class UserDBController {
     // JDBC connection details
     private static final String DB_URL = "jdbc:mysql://localhost:3306/dbvitalpay?serverTimezone=UTC";
     private static final String DB_USER = "root";
-    private static final String DB_PASS = "SPPvVcXvZ8Nz2xdD";
 
+    // For Laptop
+    //private static final String DB_PASS = "SPPvVcXvZ8Nz2xdD";
+    // For Desktop
+    private static final String DB_PASS = "3afjWZHRVJUaHAzu";
 
     // Constructor to initialize the controller with a table model
     public UserDBController() {
@@ -56,7 +59,7 @@ public class UserDBController {
             return false;
         }
     }
-    
+
     // Method to archive a staff from the database
     public boolean archiveUserStaff(String userId) {
         String updateQuery = "UPDATE users SET archive = ? WHERE user_id = ?";
@@ -138,10 +141,10 @@ public class UserDBController {
                 String last_name = rs.getString("last_name");
                 String role = rs.getString("role");
                 String archive = rs.getString("archive");
-                
+
                 String currentUserId = UserSession.getInstance().getUserId();
-                
-                if(!archive.equals("yes") && !currentUserId.equals(String.format("%s %s (%s)", first_name, last_name, user_id))) {
+
+                if (!archive.equals("yes") && !currentUserId.equals(String.format("%s %s (%s)", first_name, last_name, user_id))) {
                     userData.add(new Object[]{user_id, first_name + " " + last_name, role});
                 }
             }
@@ -166,7 +169,6 @@ public class UserDBController {
                 String first_name = rs.getString("first_name");
                 String last_name = rs.getString("last_name");
                 String address = rs.getString("address");
-                String username = rs.getString("username");
                 String password = rs.getString("password");
                 String role = rs.getString("role");
                 String archive = rs.getString("archive");
@@ -184,14 +186,14 @@ public class UserDBController {
 
         return null; // Return null deafault
     }
-    
+
     public boolean insertPatient(PatientModel patient) {
         String insertQuery = "INSERT INTO patients ("
                 + "patient_id, first_name, middle_name, last_name, phone, date_of_birth, address, "
                 + "gender, blood_group, major_diseases, symptoms, diagnosis, medicines, "
-                + "ward_required, type_of_ward, insurance_provider, company_name, id_card, archive"
-                + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
+                + "ward_required, type_of_ward, insurance_provider, company_name, id_card, created_by, archive"
+                + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         try (Connection conn = connectToDatabase(); PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
 
             pstmt.setString(1, patient.getPatientId());
@@ -212,7 +214,8 @@ public class UserDBController {
             pstmt.setString(16, patient.getInsuranceProvider());
             pstmt.setString(17, patient.getCompanyName());
             pstmt.setString(18, patient.getIdCard());
-            pstmt.setBoolean(19, patient.isArchive());
+            pstmt.setString(19, patient.getCreatedBy());
+            pstmt.setBoolean(20, patient.isArchive());
 
             int rowsInserted = pstmt.executeUpdate();
             return rowsInserted > 0;
@@ -222,7 +225,46 @@ public class UserDBController {
             return false;
         }
     }
-    
+
+    public boolean updatePatient(PatientModel patient) {
+        String updateQuery = "UPDATE patients SET "
+                + "first_name = ?, middle_name = ?, last_name = ?, phone = ?, date_of_birth = ?, address = ?, "
+                + "gender = ?, blood_group = ?, major_diseases = ?, symptoms = ?, diagnosis = ?, medicines = ?, "
+                + "ward_required = ?, type_of_ward = ?, insurance_provider = ?, company_name = ?, id_card = ?, "
+                + "archive = ? "
+                + "WHERE patient_id = ?";
+
+        try (Connection conn = connectToDatabase(); PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
+
+            pstmt.setString(1, patient.getFirstName());
+            pstmt.setString(2, patient.getMiddleName());
+            pstmt.setString(3, patient.getLastName());
+            pstmt.setString(4, patient.getPhone());
+            pstmt.setString(5, patient.getDateOfBirth());
+            pstmt.setString(6, patient.getAddress());
+            pstmt.setBoolean(7, patient.isGender()); // true for male, false for female
+            pstmt.setString(8, patient.getBloodGroup());
+            pstmt.setString(9, patient.getMajorDiseases());
+            pstmt.setString(10, patient.getSymptoms());
+            pstmt.setString(11, patient.getDiagnosis());
+            pstmt.setString(12, patient.getMedicines());
+            pstmt.setBoolean(13, patient.isWardRequired());
+            pstmt.setString(14, patient.getTypeOfWard());
+            pstmt.setString(15, patient.getInsuranceProvider());
+            pstmt.setString(16, patient.getCompanyName());
+            pstmt.setString(17, patient.getIdCard());
+            pstmt.setBoolean(18, patient.isArchive());
+            pstmt.setString(19, patient.getPatientId()); // WHERE clause value
+
+            int rowsUpdated = pstmt.executeUpdate();
+            return rowsUpdated > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error updating patient: " + e.getMessage());
+            return false;
+        }
+    }
+
     // Fetch user data from the database
     public Object[][] fetchPatientsData() {
         ArrayList<Object[]> patientData = new ArrayList<>();
@@ -240,10 +282,10 @@ public class UserDBController {
                 String last_name = rs.getString("last_name");
                 String diagnosis = rs.getString("diagnosis");
                 boolean archive = rs.getBoolean("archive");
-                
+
                 String isHaveMidle = middle_name.isEmpty() ? " " : " " + middle_name + " ";
-                
-                if(!archive) {
+
+                if (!archive) {
                     patientData.add(new Object[]{patient_id, first_name + isHaveMidle + last_name, diagnosis});
                 }
             }
@@ -255,7 +297,7 @@ public class UserDBController {
         // Convert List to a array
         return patientData.toArray(new Object[0][0]); // Conversion to Object[][] for JTable compatibility
     }
-    
+
     // Method to archive a staff from the database
     public boolean archivePatient(String patientId) {
         String updateQuery = "UPDATE patients SET archive = ? WHERE patient_id = ?";
@@ -272,50 +314,90 @@ public class UserDBController {
             return false;
         }
     }
-    
-    // Fetch user data from the database
+
+    // Fetch patient data from the database
+    public PatientModel fetchPatientById(String patientId) {
+        String query = "SELECT * FROM patients WHERE patient_id = ?";
+
+        try (Connection conn = connectToDatabase(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, patientId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    // Map ResultSet data to PatientModel using the constructor
+                    PatientModel patient = new PatientModel(
+                            rs.getString("patient_id"),
+                            rs.getString("first_name"),
+                            rs.getString("middle_name"),
+                            rs.getString("last_name"),
+                            rs.getString("phone"),
+                            rs.getString("date_of_birth"),
+                            rs.getString("address"),
+                            rs.getBoolean("gender"), // true for male, false for female
+                            rs.getString("blood_group"),
+                            rs.getString("major_diseases"),
+                            rs.getString("symptoms"),
+                            rs.getString("diagnosis"),
+                            rs.getString("medicines"),
+                            rs.getBoolean("ward_required"),
+                            rs.getString("type_of_ward"),
+                            rs.getString("insurance_provider"),
+                            rs.getString("company_name"),
+                            rs.getString("id_card"),
+                            rs.getString("created_by"),
+                            rs.getBoolean("archive") // Adjust this field if needed
+                    );
+                    return patient;
+                } else {
+                    System.out.println("Patient not found.");
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching patient: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // Fetch Patient Prescription data from the database
     public Object[][] fetchPatientPrescription(String patient_id) {
         ArrayList<Object[]> patientData = new ArrayList<>();
-        
+
         // SQL query to fetch data
-        String query = "SELECT patient_id, drug_name, drug_name, quantity, unit_price FROM patients_prescription WHERE patient_id = ?";
+        String query = "SELECT drug_code, drug_name, quantity, unit_price FROM patients_prescription WHERE patient_id = ? ORDER BY id DESC";
 
         try (Connection conn = connectToDatabase(); PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, patient_id);
 
             patientData.clear(); // clear list first
-            
+
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    String patientId = rs.getString("patient_id");
+                // Loop through all rows
+                while (rs.next()) {
                     String drugCode = rs.getString("drug_code");
                     String drugName = rs.getString("drug_name");
                     int quantity = rs.getInt("quantity");
                     double unitPrice = rs.getDouble("unit_price");
                     double totalCost = quantity * unitPrice;
 
-                    // Print row data
+                    // Add each row to the list
                     patientData.add(new Object[]{drugCode, drugName, quantity, unitPrice, totalCost});
-                } else {
-                    System.out.println("User not found.");
-                    return null;  // Return null if no user found
                 }
             }
         } catch (SQLException e) {
             System.out.println(e);
             return null;  // Return null in case of any SQL error
         }
-        
+
         // Convert List to a array
         return patientData.toArray(new Object[0][0]); // Conversion to Object[][] for JTable compatibility
     }
-    
+
     public boolean insertPatientPrescription(String patientId, String drugCode, String drugName, int quantity, Double unitPrice) {
         // SQL INSERT query
         String query = "INSERT INTO patients_prescription (patient_id, drug_code, drug_name, quantity, unit_price) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection con = connectToDatabase();
-             PreparedStatement preparedStatement = con.prepareStatement(query)) {
+        try (Connection con = connectToDatabase(); PreparedStatement preparedStatement = con.prepareStatement(query)) {
 
             // Set values for placeholders
             preparedStatement.setString(1, patientId);
@@ -329,7 +411,103 @@ public class UserDBController {
             return rowsInserted > 0;
 
         } catch (Exception e) {
-            System.err.println("Error inserting patient: " + e.getMessage());
+            System.err.println("Error inserting patient date:" + e.getMessage());
+            return false;
+        }
+    }
+    
+    // Method to deletePatientPrescription
+    public boolean deletePatientPrescription(String patientId, String drugCode) {
+        // SQL DELETE query
+        String query = "DELETE FROM patients_prescription WHERE patient_id = ? AND drug_code = ?";
+
+        try (Connection con = connectToDatabase(); PreparedStatement preparedStatement = con.prepareStatement(query)) {
+
+            // Set values for placeholders
+            preparedStatement.setString(1, patientId);
+            preparedStatement.setString(2, drugCode);
+
+            // Execute the DELETE query
+            int rowsDeleted = preparedStatement.executeUpdate();
+            return rowsDeleted > 0;
+
+        } catch (Exception e) {
+            System.err.println("Error deleting patient prescription: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    // Fetch PatientDiagnosis data from the database
+    public Object[][] fetchPatientDiagnostic(String patient_id) {
+        ArrayList<Object[]> patientData = new ArrayList<>();
+
+        // SQL query to fetch data
+        String query = "SELECT test_name, test_description, test_cost FROM patients_diagnostics WHERE patient_id = ? ORDER BY id DESC";
+
+        try (Connection conn = connectToDatabase(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, patient_id);
+
+            patientData.clear(); // clear list first
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // Loop through all rows
+                while (rs.next()) {
+                    String testName = rs.getString("test_name");
+                    String testDescription = rs.getString("test_description");
+                    double testCost = rs.getDouble("test_cost");
+
+                    // Add each row to the list
+                    patientData.add(new Object[]{testName, testDescription, testCost});
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;  // Return null in case of any SQL error
+        }
+
+        // Convert List to a array
+        return patientData.toArray(new Object[0][0]); // Conversion to Object[][] for JTable compatibility
+    }
+
+    public boolean insertPatientDiagnostic(String patientId, String test_name, String test_description, Double test_cost) {
+        // SQL INSERT query
+        String query = "INSERT INTO patients_diagnostics (patient_id, test_name, test_description, test_cost) VALUES (?, ?, ?, ?)";
+
+        try (Connection con = connectToDatabase(); PreparedStatement preparedStatement = con.prepareStatement(query)) {
+
+            // Set values for placeholders
+            preparedStatement.setString(1, patientId);
+            preparedStatement.setString(2, test_name);
+            preparedStatement.setString(3, test_description);
+            preparedStatement.setDouble(4, test_cost);
+
+            // Execute the INSERT query
+            int rowsInserted = preparedStatement.executeUpdate();
+            return rowsInserted > 0;
+
+        } catch (Exception e) {
+            System.err.println("Error inserting patient data: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    // Method to deletePatientPrescription
+    public boolean deletePatientDiagnostic(String patientId, String drugCode) {
+        // SQL DELETE query
+        String query = "DELETE FROM patients_diagnostics WHERE patient_id = ? AND test_name = ?";
+
+        try (Connection con = connectToDatabase(); PreparedStatement preparedStatement = con.prepareStatement(query)) {
+
+            // Set values for placeholders
+            preparedStatement.setString(1, patientId);
+            preparedStatement.setString(2, drugCode);
+
+            // Execute the DELETE query
+            int rowsDeleted = preparedStatement.executeUpdate();
+            return rowsDeleted > 0;
+
+        } catch (Exception e) {
+            System.err.println("Error deleting patient prescription: " + e.getMessage());
             return false;
         }
     }

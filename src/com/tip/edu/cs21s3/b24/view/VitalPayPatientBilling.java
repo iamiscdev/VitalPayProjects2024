@@ -1,6 +1,9 @@
 package com.tip.edu.cs21s3.b24.view;
 
+import com.tip.edu.cs21s3.b24.controller.UserDBController;
+import com.tip.edu.cs21s3.b24.dialog.CustomDialog;
 import com.tip.edu.cs21s3.b24.model.Constants;
+import com.tip.edu.cs21s3.b24.model.PatientModel;
 import static com.tip.edu.cs21s3.b24.view.AdminDashboard.db;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -8,6 +11,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -26,12 +30,17 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
     private JComboBox<String> planComboBox, roomTypeComboBox;
     private JButton addDrugBtn, removeDrugBtn, addTestBtn, removeTestBtn, generateBillBtn, backBtn;
 
+    public UserDBController db;
+    public PatientModel patient;
+    public String patient_id;
     public String[] prescriptionColumns = {"Drug Code", "Drug Name", "Quantity", "Unit Price", "Total Cost"};
     public String[] diagnosticsColumns = {"Test Name", "Test Description", "Cost"};
     
-    
+    public VitalPayPatientBilling(String patient_id) {
+        db = new UserDBController();
+        this.patient_id =patient_id;
+        this.patient = db.fetchPatientById(patient_id);
         
-    public VitalPayPatientBilling() {
         setTitle("Patient Billing");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1000, 750);
@@ -79,10 +88,12 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         mainPanel.add(patientIdLabel);
 
         patientIdField = new JTextField();
+        patientIdField.setText(patient.getPatientId());
+        patientIdField.setEnabled(false);
         patientIdField.setBounds(110, 10, 150, 25);
         mainPanel.add(patientIdField);
 
-        JLabel patientNameLabel = new JLabel("Patient Name: <output>");
+        JLabel patientNameLabel = new JLabel("Patient Name: " + String.format("%s, %s %s ", patient.getLastName(), patient.getFirstName(), patient.getMiddleName()));
         patientNameLabel.setBounds(300, 10, 500, 25);
         mainPanel.add(patientNameLabel);
 
@@ -91,8 +102,17 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         prescriptionLabel.setBounds(30, 50, 200, 25);
         mainPanel.add(prescriptionLabel);
         
-        
-        fetchPatientPrescription();
+        Object[][] data = db.fetchPatientPrescription(patient_id);
+        prescriptionTableModel = new DefaultTableModel(data, prescriptionColumns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        prescriptionTable = new JTable(prescriptionTableModel);
+        // Set the selection mode (0 corresponds to selecting rows)
+        prescriptionTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        prescriptionTable.getTableHeader().setReorderingAllowed(false);
         
         JScrollPane prescriptionScrollPane = new JScrollPane(prescriptionTable);
         prescriptionScrollPane.setBounds(30, 80, 600, 150);
@@ -120,9 +140,17 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         JLabel diagnosticsLabel = new JLabel("Diagnostics Details:");
         diagnosticsLabel.setBounds(30, 280, 200, 25);
         mainPanel.add(diagnosticsLabel);
-
-        diagnosticsTableModel = new DefaultTableModel(diagnosticsColumns, 0);
+        
+        Object[][] dataDiagnostic = db.fetchPatientDiagnostic(patient_id);
+        diagnosticsTableModel = new DefaultTableModel(dataDiagnostic, diagnosticsColumns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         diagnosticsTable = new JTable(diagnosticsTableModel);
+        // Set the selection mode (0 corresponds to selecting rows)
+        diagnosticsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         diagnosticsTable.getTableHeader().setReorderingAllowed(false);
         
         JScrollPane diagnosticsScrollPane = new JScrollPane(diagnosticsTable);
@@ -151,60 +179,101 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         JLabel roomTypeLabel = new JLabel("Room Type:");
         roomTypeLabel.setBounds(30, 510, 100, 25);
         mainPanel.add(roomTypeLabel);
+        roomTypeLabel.setVisible(patient.isWardRequired());
 
+        
         roomTypeComboBox = new JComboBox<>(new String[]{"General", "Semi-Private", "Private"});
         roomTypeComboBox.setBounds(130, 510, 150, 25);
+        roomTypeComboBox.setSelectedItem(patient.getTypeOfWard().trim());
+        roomTypeComboBox.setBackground(Constants.PRIMARY_COLOR); // Set background color of JComboBox to Teal
+        roomTypeComboBox.setForeground(Constants.TEXT_COLOR);  // Set text color for items in JComboBox
         mainPanel.add(roomTypeComboBox);
-
+        
+        roomTypeComboBox.setVisible(patient.isWardRequired());
+        
         JLabel daysLabel = new JLabel("Days:");
         daysLabel.setBounds(300, 510, 50, 25);
         mainPanel.add(daysLabel);
+        daysLabel.setVisible(patient.isWardRequired());
 
         daysField = new JTextField();
         daysField.setBounds(350, 510, 50, 25);
         mainPanel.add(daysField);
+        daysField.setVisible(patient.isWardRequired());
 
         // Plan Selection Section
-        JLabel planLabel = new JLabel("Maxicare Plan:");
-        planLabel.setBounds(30, 540, 100, 25);
+        JLabel planLabel = new JLabel(patient.getInsuranceProvider() + " Plan");
+        // Get the font metrics for the label's font
+        FontMetrics metrics1 = planLabel.getFontMetrics(planLabel.getFont());
+
+        // Calculate the width of the text
+        int textWidth1 = metrics1.stringWidth(planLabel.getText());
+        
+        planLabel.setBounds(30, 540, textWidth1, 25);
         mainPanel.add(planLabel);
+        
+        planLabel.setVisible(!patient.getInsuranceProvider().isEmpty());
 
         planComboBox = new JComboBox<>(new String[]{"Silver", "Gold", "Platinum", "Platinum Plus"});
-        planComboBox.setBounds(130, 540, 150, 25);
+        
+        planComboBox.setBounds(textWidth1 + 35, 540, 150, 25);
+        planComboBox.setBackground(Constants.PRIMARY_COLOR); // Set background color of JComboBox to Teal
+        planComboBox.setForeground(Constants.TEXT_COLOR);  // Set text color for items in JComboBox
         mainPanel.add(planComboBox);
-
+        planComboBox.setVisible(!patient.getInsuranceProvider().isEmpty());
+        
         // Summary Section
-        JLabel summaryLabel = new JLabel("Bill Breakdown:");
-        summaryLabel.setBounds(700, 50, 200, 25);
+        JLabel summaryLabel = new JLabel("===ACKNOWLEDGEMENT RECEIPT===");
+
+        // Get the font metrics for the label's font
+        FontMetrics metrics = summaryLabel.getFontMetrics(summaryLabel.getFont());
+
+        // Calculate the width of the text
+        int textWidth = metrics.stringWidth(summaryLabel.getText());
+        
+        summaryLabel.setBounds(700, 50, textWidth, 25);
         mainPanel.add(summaryLabel);
 
+        int yPosition = 80; // Start Y-position for the first label below summaryLabel
+
         totalPrescriptionLabel = new JLabel("Total Prescription Cost: 0");
-        totalPrescriptionLabel.setBounds(700, 80, 300, 25);
+        totalPrescriptionLabel.setBounds(700, yPosition, 300, 25);
         mainPanel.add(totalPrescriptionLabel);
+        yPosition += 30; // Increment Y-position
 
         totalDiagnosticsLabel = new JLabel("Total Diagnostics Cost: 0");
-        totalDiagnosticsLabel.setBounds(700, 110, 300, 25);
+        totalDiagnosticsLabel.setBounds(700, yPosition, 300, 25);
         mainPanel.add(totalDiagnosticsLabel);
+        yPosition += 30; // Increment Y-position
 
-        totalRoomChargesLabel = new JLabel("Total Room Charges: 0");
-        totalRoomChargesLabel.setBounds(700, 140, 300, 25);
-        mainPanel.add(totalRoomChargesLabel);
-        
-        
+        // Add totalRoomChargesLabel if the ward is required
+        if (patient.isWardRequired()) {
+            totalRoomChargesLabel = new JLabel("Total Room Charges: 0");
+            totalRoomChargesLabel.setBounds(700, yPosition, 300, 25);
+            mainPanel.add(totalRoomChargesLabel);
+            yPosition += 30; // Increment Y-position
+        }
+
+        // Add coverageLabel if the insurance provider is specified
+        if (!patient.getInsuranceProvider().isEmpty()) {
+            coverageLabel = new JLabel(patient.getInsuranceProvider() + " Coverage: 0.0");
+            coverageLabel.setBounds(700, yPosition, 300, 25);
+            mainPanel.add(coverageLabel);
+            yPosition += 30; // Increment Y-position
+        }
+
         vatLabel = new JLabel("VAT: 0");
-        vatLabel.setBounds(700, 170, 300, 25);
+        vatLabel.setBounds(700, yPosition, 300, 25);
         mainPanel.add(vatLabel);
+        yPosition += 30; // Increment Y-position
 
-        grossTotalLabel = new JLabel("Gross Total: 0");
-        grossTotalLabel.setBounds(700, 200, 300, 25);
+        grossTotalLabel = new JLabel("Gross Total: 0.0");
+        grossTotalLabel.setBounds(700, yPosition, 300, 25);
         mainPanel.add(grossTotalLabel);
+        yPosition += 30; // Increment Y-position
 
-        coverageLabel = new JLabel("Maxicare Coverage: 0");
-        coverageLabel.setBounds(700, 230, 300, 25);
-        mainPanel.add(coverageLabel);
-
-        payableLabel = new JLabel("Payable Amount: 0");
-        payableLabel.setBounds(700, 260, 300, 25);
+        payableLabel = new JLabel("Payable Amount: 0.0");
+        payableLabel.setBounds(700, yPosition, 300, 25);
         mainPanel.add(payableLabel);
 
         // Action Buttons
@@ -219,28 +288,37 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         backBtn = styleButton2(backBtn); // Apply button style
         backBtn.addActionListener(this);
         mainPanel.add(backBtn);
-
+        
+        updatePrescriptionTotal();
+        updateDiagnosticsTotal();
         return mainPanel;
     }
     
-    private void fetchPatientPrescription() {
+    private void reloadPrescription() {
 
-        
-        Object[][] data = db.fetchPatientPrescription("P-123456");
+        Object[][] data = db.fetchPatientPrescription(patient_id);
         prescriptionTableModel = new DefaultTableModel(data, prescriptionColumns) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        prescriptionTable = new JTable(prescriptionTableModel);
-
+        
+        prescriptionTable.setModel(prescriptionTableModel);
+        updatePrescriptionTotal();
     }
     
-    private void fetchPatientDiagnosis() {
-
+    private void reloadDiagnostic() {
+        Object[][] dataDiagnostic = db.fetchPatientDiagnostic(patient_id);
+        diagnosticsTableModel = new DefaultTableModel(dataDiagnostic, diagnosticsColumns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         
-
+        diagnosticsTable.setModel(diagnosticsTableModel);
+        updateDiagnosticsTotal();
     }
 
     // Button Style Helper Method
@@ -277,46 +355,109 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
             try {
                 int quantity = Integer.parseInt(quantityStr);
                 double unitPrice = Double.parseDouble(unitPriceStr);
-                double totalCost = quantity * unitPrice;
 
-                //prescriptionTableModel.addRow(new Object[]{drugCode, drugName, quantity, unitPrice, totalCost});
+                if (db.insertPatientPrescription(patient.getPatientId(), drugCode, drugName, quantity, unitPrice)) {
 
-                fetchPatientDiagnosis();
-                updatePrescriptionTotal();
+                    CustomDialog.showMessage(
+                            this,
+                            "Prescription added successfully",
+                            "Success",
+                            "success"
+                    );
+
+                    reloadPrescription();
+                } else {
+                    CustomDialog.showMessage(
+                            this,
+                            "Adding prescription unsuccessful",
+                            "Error",
+                            "error"
+                    );
+                }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid input for quantity or unit price.", "Error", JOptionPane.ERROR_MESSAGE);
+                
+                CustomDialog.showMessage(
+                            this,
+                            "Invalid input for quantity or unit price.",
+                            "Error",
+                            "error"
+                    );
             }
         } else if (e.getSource() == removeDrugBtn) {
+
             // Remove Drug Logic
             int selectedRow = prescriptionTable.getSelectedRow();
             if (selectedRow != -1) {
-                prescriptionTableModel.removeRow(selectedRow);
-                updatePrescriptionTotal();
+
+                String drugCode = prescriptionTable.getValueAt(selectedRow, 0).toString();
+                if (db.deletePatientPrescription(patient.getPatientId(), drugCode)) {
+                    reloadPrescription();
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Please select a drug to remove.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                CustomDialog.showMessage(
+                        this,
+                        "Please select a drug to remove.",
+                        "Error",
+                        "error"
+                );
+
             }
         } else if (e.getSource() == addTestBtn) {
             // Add Test Logic
-            String testCode = JOptionPane.showInputDialog(this, "Enter Test Code:");
-            String testName = JOptionPane.showInputDialog(this, "Enter Test Name:");
-            String costStr = JOptionPane.showInputDialog(this, "Enter Test Cost:");
+            String testCode = JOptionPane.showInputDialog(this, "Enter Test Name:");
+            String testDes = JOptionPane.showInputDialog(this, "Enter Test Description:");
+            String costStr = JOptionPane.showInputDialog(this, "Enter Cost:");
 
             try {
                 double cost = Double.parseDouble(costStr);
 
-                diagnosticsTableModel.addRow(new Object[]{testCode, testName, cost});
-                updateDiagnosticsTotal();
+                if (db.insertPatientDiagnostic(patient.getPatientId(), testCode, testDes, cost)) {
+
+                    CustomDialog.showMessage(
+                            this,
+                            "Diagnostic added successfully",
+                            "Success",
+                            "success"
+                    );
+
+                    reloadDiagnostic();
+                } else {
+                    CustomDialog.showMessage(
+                            this,
+                            "Adding diagnostic unsuccessful",
+                            "Error",
+                            "error"
+                    );
+                }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid input for test cost.", "Error", JOptionPane.ERROR_MESSAGE);
+                
+                CustomDialog.showMessage(
+                            this,
+                            "Invalid input for unit price.",
+                            "Error",
+                            "error"
+                    );
             }
         } else if (e.getSource() == removeTestBtn) {
+
             // Remove Test Logic
             int selectedRow = diagnosticsTable.getSelectedRow();
             if (selectedRow != -1) {
-                diagnosticsTableModel.removeRow(selectedRow);
-                updateDiagnosticsTotal();
+
+                String testName = diagnosticsTable.getValueAt(selectedRow, 0).toString();
+                if (db.deletePatientDiagnostic(patient.getPatientId(), testName)) {
+                    reloadDiagnostic();
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Please select a test to remove.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                CustomDialog.showMessage(
+                        this,
+                        "Please select a test to remove.",
+                        "Error",
+                        "error"
+                );
+
             }
         } else if (e.getSource() == generateBillBtn) {
             // Generate Bill Logic
@@ -333,10 +474,19 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
                 // Update labels
                 totalPrescriptionLabel.setText("Total Prescription Cost: " + totalPrescription);
                 totalDiagnosticsLabel.setText("Total Diagnostics Cost: " + totalDiagnostics);
-                totalRoomChargesLabel.setText("Total Room Charges: " + roomCharges);
+                
+                if (patient.isWardRequired()) {
+                    totalRoomChargesLabel.setText("Total Room Charges: " + roomCharges);
+                }
+                
+                
                 vatLabel.setText("VAT: " + vat);
                 grossTotalLabel.setText("Gross Total: " + grossTotal);
-                coverageLabel.setText("Maxicare Coverage: " + grossTotal);
+                
+                if (!patient.getInsuranceProvider().isEmpty()) {
+                    coverageLabel.setText(patient.getInsuranceProvider() + " Coverage: " + grossTotal);
+                }
+                
                 payableLabel.setText("Payable Amount: " + payableAmount);
 
             } catch (NumberFormatException ex) {
@@ -376,38 +526,42 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
     }
 
     private double calculateRoomCharges() throws NumberFormatException {
-        String roomType = (String) roomTypeComboBox.getSelectedItem();
-        int days = Integer.parseInt(daysField.getText());
-        double rate = switch (roomType) {
-            case "Private" ->
-                5000;
-            case "Semi-Private" ->
-                3000;
-            case "General" ->
-                1500;
-            default ->
-                0;
-        };
-        return rate * days;
+        if (patient.isWardRequired()) {
+            String roomType = (String) roomTypeComboBox.getSelectedItem();
+            int days = Integer.parseInt(daysField.getText());
+            double rate = switch (roomType) {
+                case "Private" ->
+                    5000;
+                case "Semi-Private" ->
+                    3000;
+                case "General" ->
+                    1500;
+                default ->
+                    0;
+            };
+            return rate * days;
+        } else {
+            return 0.0;
+        }
     }
 
     private int getCoverageLimit() {
-        String plan = (String) planComboBox.getSelectedItem();
-        return switch (plan) {
-            case "Silver" ->
-                Constants.SILVER_COVERAGE;
-            case "Gold" ->
-                Constants.GOLD_COVERAGE;
-            case "Platinum" ->
-                Constants.PLATINUM_COVERAGE;
-            case "Platinum Plus" ->
-                Constants.PLATINUMPLUS_COVERAGE;
-            default ->
-                0;
-        };
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(VitalPayPatientBilling::new);
+        if (!patient.getInsuranceProvider().isEmpty()) {
+            String plan = (String) planComboBox.getSelectedItem();
+            return switch (plan) {
+                case "Silver" ->
+                    Constants.SILVER_COVERAGE;
+                case "Gold" ->
+                    Constants.GOLD_COVERAGE;
+                case "Platinum" ->
+                    Constants.PLATINUM_COVERAGE;
+                case "Platinum Plus" ->
+                    Constants.PLATINUMPLUS_COVERAGE;
+                default ->
+                    0;
+            };
+        } else {
+            return 0;
+        }
     }
 }

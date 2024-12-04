@@ -46,9 +46,9 @@ public final class VitalPayLogin extends JFrame {
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30))); // Spacer
 
         // Username field with styled border and placeholder
-        userIdField = new JTextField("Username");
+        userIdField = new JTextField("Userid");
         styleTextField(userIdField);
-        addPlaceholder(userIdField, "Username");
+        addPlaceholder(userIdField, "Userid");
         mainPanel.add(userIdField);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Spacer
 
@@ -98,7 +98,7 @@ public final class VitalPayLogin extends JFrame {
 
                 CustomDialog.showMessage(
                         this,
-                        "Login Successful! Welcome, " + user.getFirstName() + " " + user.getLastName(),
+                        "Login Successful! <br>Welcome, <br>" + user.getFirstName() + " " + user.getLastName(),
                         "Success",
                         "success"
                 );

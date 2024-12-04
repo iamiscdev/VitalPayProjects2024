@@ -3,6 +3,7 @@ package com.tip.edu.cs21s3.b24.view;
 import com.tip.edu.cs21s3.b24.controller.UserDBController;
 import com.tip.edu.cs21s3.b24.dialog.CustomDialog;
 import com.tip.edu.cs21s3.b24.model.Constants;
+import com.tip.edu.cs21s3.b24.model.PatientModel;
 import com.tip.edu.cs21s3.b24.model.UserSession;
 import com.tip.edu.cs21s3.b24.model.UserStaffModel;
 import javax.swing.*;
@@ -54,7 +55,7 @@ public final class StaffDashboard extends JFrame implements ActionListener {
 
         // Buttons
         addPatientBtn = createStyledButton("Add Patient");
-        generateBillBtn = createStyledButton("Generate Bill");
+        generateBillBtn = createStyledButton("Patient Billing");
         logoutBtn = createStyledButton("Logout");
 
         // Action listeners
@@ -142,6 +143,8 @@ public final class StaffDashboard extends JFrame implements ActionListener {
         };
         patientTable = new JTable(tableModel);
 
+        patientTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        patientTable.getTableHeader().setReorderingAllowed(false);
         patientTable.setRowHeight(35);
         JTableHeader header = patientTable.getTableHeader();
         header.setBackground(new Color(0, 150, 136));
@@ -201,7 +204,7 @@ public final class StaffDashboard extends JFrame implements ActionListener {
             editPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
             // Initialize buttons
-            editButton = createStyledButton("Precribe");
+            editButton = createStyledButton("View & Edit");
             archiveButton = createStyledButton("Archive");
 
             // Add buttons to the edit panel
@@ -213,14 +216,17 @@ public final class StaffDashboard extends JFrame implements ActionListener {
             archiveButton.addActionListener(e -> handleArchiveAction(currentRow));
 
             // Create render buttons (non-clickable)
-            renderPanel.add(createStyledButton("Precribe", false));
-            renderPanel.add(createStyledButton("Archive", false));
+            renderPanel.add(createStyledButton("View & Edit", true));
+            renderPanel.add(createStyledButton("Archive", true));
         }
 
         private void handleEditAction(int row) {
-            System.out.println("Editing patient at row: " + row);
-            new VitalPayPatientBilling().setVisible(true);
-
+            
+            String patient_id = patientTable.getValueAt(row, 0).toString(); // Get the value in in column 0
+            PatientModel patient = db.fetchPatientById(patient_id);
+            
+            //System.out.println("Editing patient at row: " + row);
+            new AddPatient(patient).setVisible(true);
             fireEditingStopped(); // Commit edit and close editor
         }
 
@@ -318,6 +324,23 @@ public final class StaffDashboard extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addPatientBtn) {
             new AddPatient().setVisible(true);
+        } else if (e.getSource() == generateBillBtn) {
+
+            int selectedRow = patientTable.getSelectedRow();
+            if (selectedRow != -1) {
+
+                String patient_id = patientTable.getValueAt(selectedRow, 0).toString();
+                new VitalPayPatientBilling(patient_id).setVisible(true);
+            } else {
+
+                CustomDialog.showMessage(
+                        this,
+                        "Please select a user first",
+                        "Error",
+                        "error"
+                );
+
+            }
         } else if (e.getSource() == logoutBtn) {
             dispose();
             new VitalPayLogin().setVisible(true);

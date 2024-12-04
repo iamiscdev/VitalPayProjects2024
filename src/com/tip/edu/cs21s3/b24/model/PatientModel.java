@@ -25,6 +25,7 @@ public class PatientModel {
     private String insuranceProvider;
     private String companyName;
     private String idCard;
+    private String created_by;
     private boolean archive; // True if archived
 
     // Constructor
@@ -32,7 +33,7 @@ public class PatientModel {
                         String phone, String dateOfBirth, String address, boolean gender,
                         String bloodGroup, String majorDiseases, String symptoms, String diagnosis,
                         String medicines, boolean wardRequired, String typeOfWard,
-                        String insuranceProvider, String companyName, String idCard, boolean archive) {
+                        String insuranceProvider, String companyName, String idCard, String created_by, boolean archive) {
         this.patientId = patientId;
         this.firstName = firstName;
         this.middleName = middleName;
@@ -51,6 +52,7 @@ public class PatientModel {
         this.insuranceProvider = insuranceProvider;
         this.companyName = companyName;
         this.idCard = idCard;
+        this.created_by = created_by;
         this.archive = archive;
     }
 
@@ -125,6 +127,10 @@ public class PatientModel {
 
     public String getIdCard() {
         return idCard;
+    }
+    
+    public String getCreatedBy() {
+        return created_by;
     }
 
     public boolean isArchive() {

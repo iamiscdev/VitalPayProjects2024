@@ -4,6 +4,7 @@ import com.tip.edu.cs21s3.b24.controller.UserDBController;
 import com.tip.edu.cs21s3.b24.dialog.CustomDialog;
 import com.tip.edu.cs21s3.b24.model.Constants;
 import com.tip.edu.cs21s3.b24.model.PatientModel;
+import com.tip.edu.cs21s3.b24.model.UserSession;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -23,25 +24,38 @@ public class AddPatient extends JFrame implements ActionListener {
     private JCheckBox wardCheckBox;
     private JComboBox<String> wardTypeComboBox;
 
+    private boolean isEditing;
+    private PatientModel patient;
     private UserDBController db;
 
     public AddPatient() {
+        this(null); // Call the overloaded constructor with no patient (add mode)
+    }
+    
+    public AddPatient(PatientModel patient){
 
         db = new UserDBController();
 
-        // Create the main frame
-        setTitle("New Patient Form");
+        this.patient = patient;
+        this.isEditing = (patient != null);
+        
+        // Set the frame title dynamically based on mode
+        setTitle(isEditing ? "Edit Patient" : "New Patient Form");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setSize(800, 800);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
         setResizable(false);
         
-        
         // Initialize and add components
         add(createTitlePanel(), BorderLayout.PAGE_START);
         add(createFormPanel(), BorderLayout.CENTER);
 
+         // Prepopulate fields if editing
+        if (isEditing) {
+            populateFields();
+        }
+        
         setVisible(true);
     }
 
@@ -59,8 +73,8 @@ public class AddPatient extends JFrame implements ActionListener {
         titlePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 35)); // Center components in the panel
         titlePanel.setPreferredSize(new Dimension(getWidth(), 100));
 
-        // Initialize and customize the JLabel
-        tLabel = new JLabel("NEW PATIENT FORM");
+         // Initialize and customize the JLabel
+        tLabel = new JLabel(isEditing ? "EDIT PATIENT FORM" : "NEW PATIENT FORM");
         tLabel.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 24));
         tLabel.setForeground(Color.WHITE);
 
@@ -160,6 +174,7 @@ public class AddPatient extends JFrame implements ActionListener {
         formPanel.add(genLabel);
 
         maleRadio = new JRadioButton("Male");
+        maleRadio.setSelected(true);
         maleRadio.setBounds(150, 480, 70, 20);
         femaleRadio = new JRadioButton("Female");
         femaleRadio.setBounds(220, 480, 80, 20);
@@ -226,19 +241,6 @@ public class AddPatient extends JFrame implements ActionListener {
         wardTypeComboBox.setBackground(Constants.PRIMARY_COLOR); // Set background color of JComboBox to Teal
         wardTypeComboBox.setForeground(Constants.TEXT_COLOR);  // Set text color for items in JComboBox
 
-        // Customize the List (inside JComboBox)
-        wardTypeComboBox.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
-            @Override
-            protected JButton createArrowButton() {
-                JButton arrowButton = super.createArrowButton();
-                arrowButton.setBackground(Constants.PRIMARY_COLOR);  // Set arrow button background to match
-                return arrowButton;
-            }
-        });
-
-        // Set the divider color (line between items) to teal green
-        wardTypeComboBox.setBorder(BorderFactory.createLineBorder(Constants.PRIMARY_COLOR));
-
         wardTypeComboBox.setVisible(false);
         wardTypeComboBox.setBounds(550, 260, 150, 25);
         formPanel.add(wardTypeComboBox);
@@ -275,7 +277,7 @@ public class AddPatient extends JFrame implements ActionListener {
 
         // Buttons
         // Save Details Button
-        saveBtn = new JButton("Save");
+        saveBtn = new JButton(isEditing ? "Update" : "Save");
         saveBtn.setPreferredSize(new Dimension(120, 40));
         saveBtn.setBackground(Constants.PRIMARY_COLOR);
         saveBtn.setForeground(Constants.TEXT_COLOR);
@@ -303,10 +305,40 @@ public class AddPatient extends JFrame implements ActionListener {
         return formPanel;
     }
 
+    private void populateFields() {
+        fnField.setText(patient.getFirstName());
+        mnField.setText(patient.getMiddleName());
+        snField.setText(patient.getLastName());
+        numbField.setText(patient.getPhone());
+        dobField.setText(patient.getDateOfBirth());
+        addressField.setText(patient.getAddress());
+        bgField.setText(patient.getBloodGroup());
+        disField.setText(patient.getMajorDiseases());
+        symptomsField.setText(patient.getSymptoms());
+        diagnosisField.setText(patient.getDiagnosis());
+        medicinesField.setText(patient.getMedicines());
+        wardCheckBox.setSelected(patient.isWardRequired());
+        wardTypeComboBox.setSelectedItem(patient.getTypeOfWard());
+        insuranceField.setText(patient.getInsuranceProvider());
+        companyNameField.setText(patient.getCompanyName());
+        idCardField.setText(patient.getIdCard());
+        
+        if (patient.isGender()) {
+            maleRadio.setSelected(true);
+        } else {
+            femaleRadio.setSelected(false);
+        }
+
+        // Show ward type controls if ward is required
+        wardTypeLabel.setVisible(patient.isWardRequired());
+        wardTypeComboBox.setVisible(patient.isWardRequired());
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == saveBtn) {
-            // Extract data from user inputs
+            
+             // Extract data from user inputs
             String firstName = fnField.getText();
             String middleName = mnField.getText();
             String lastName = snField.getText();
@@ -319,62 +351,90 @@ public class AddPatient extends JFrame implements ActionListener {
             String diagnosis = diagnosisField.getText();
             String medicines = medicinesField.getText();
             boolean wardRequired = wardCheckBox.isSelected();
-            String wardType = wardRequired ? (String) wardTypeComboBox.getSelectedItem() : "None";
+            String wardType = wardRequired ? (String) wardTypeComboBox.getSelectedItem() : "General";
             String insuranceProvider = insuranceField.getText();
             String companyName = companyNameField.getText();
             String idCard = idCardField.getText();
             boolean genderMale = maleRadio.isSelected();
-
-            // Validate inputs (optional but recommended)
+            
+            // Validate inputs
             if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty() || dob.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please fill in all required fields.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Create the PatientModel object
-            PatientModel patient = new PatientModel(
-                    generatePatientId(6), // Generate a unique patient ID
-                    firstName,
-                    middleName,
-                    lastName,
-                    phoneNumber,
-                    dob,
-                    address,
-                    genderMale,
-                    bloodGroup,
-                    diseases,
-                    symptoms,
-                    diagnosis,
-                    medicines,
-                    wardRequired,
-                    wardType,
-                    insuranceProvider,
-                    companyName,
-                    idCard,
-                    false // Adjust this field if needed
-            );
-
-            if (db.insertPatient(patient)) {
-
                 CustomDialog.showMessage(
                         this,
-                        "Patient added successfully",
-                        "Success",
-                        "success"
+                        "Please fill in all required fields.",
+                        "Warning",
+                        "warning"
                 );
-
-                this.setVisible(false);
-                AdminDashboard.reloadTableData();
+                return;
+            } 
+            
+            if (!insuranceProvider.isEmpty()) {
+                if (companyName.isEmpty() || idCard.isEmpty()) {
+                    CustomDialog.showMessage(
+                            this,
+                            "Please fill in the Company Name and ID Card",
+                            "Warning",
+                            "warning"
+                    );
+                    return;
+                }
+            }
+            
+             // Create the PatientModel object
+                PatientModel patient_ = new PatientModel(
+                        isEditing ? patient.getPatientId() : generatePatientId(6) , // Generate a unique patient ID
+                        firstName,
+                        middleName,
+                        lastName,
+                        phoneNumber,
+                        dob,
+                        address,
+                        genderMale,
+                        bloodGroup,
+                        diseases,
+                        symptoms,
+                        diagnosis,
+                        medicines,
+                        wardRequired,
+                        wardType,
+                        insuranceProvider,
+                        companyName,
+                        idCard,
+                        UserSession.getInstance().getUserId(),
+                        false // Adjust this field if needed
+                );
+            
+            String userRole = UserSession.getInstance().getRole();
+            
+            // Update patient object if editing
+            if (isEditing) {
+                // Update patient in the database
+                if (db.updatePatient(patient_)) {
+                    CustomDialog.showMessage(this, "Patient updated successfully", "Success", "success");
+                     if(userRole.equals("Admin")) {
+                        AdminDashboard.reloadTableData();
+                    } else {
+                        StaffDashboard.reloadPatientTableData();
+                    }
+                    this.dispose();
+                } else {
+                    CustomDialog.showMessage(this, "Updating patient unsuccessful", "Error", "error");
+                }
 
             } else {
-                CustomDialog.showMessage(
-                        this,
-                        "Adding patient unsuccessful",
-                        "Error",
-                        "error"
-                );
+                
+                if (db.insertPatient(patient_)) {
+                    CustomDialog.showMessage(this, "Patient added successfully", "Success", "success");
+                    if(userRole.equals("Admin")) {
+                        AdminDashboard.reloadTableData();
+                    } else {
+                        StaffDashboard.reloadPatientTableData();
+                    }
+                    this.dispose();
+                } else {
+                    CustomDialog.showMessage(this, "Adding patient unsuccessful", "Error", "error");
+                }
             }
-
         } else if (e.getSource() == backBtn) {
             this.dispose();
         } else if (e.getSource() == wardCheckBox) {

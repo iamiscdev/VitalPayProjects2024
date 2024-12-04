@@ -19,6 +19,7 @@ public class Constants {
     public static final Color SECONDARY_COLOR = new Color(0xFF5722);  // Orange (for buttons)
     public static final Color BACKGROUND_COLOR = new Color(0xF5F5F5);  // Light Gray
     public static final Color TEXT_COLOR = new Color(0xFFFFFF);  // white for text
+    public static final Color TEXT_COLOR_BLACK = new Color(0xFF000000);  // black for text
     public static final Color TEXT_COLOR_SECONDARY = new Color(0x333333);  // white for text
     
     // Calculation for billing

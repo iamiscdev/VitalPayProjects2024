@@ -183,6 +183,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
                 }
             };
             userTable = new JTable(tableModel);
+            userTable.getTableHeader().setReorderingAllowed(false);
         } else {
             // Table
             String[] columnNames = {"Patient ID", "Name", "Diagnosis", "Actions"};
@@ -194,8 +195,10 @@ public final class AdminDashboard extends JFrame implements ActionListener {
                 }
             };
             userTable = new JTable(tableModel);
+            userTable.getTableHeader().setReorderingAllowed(false);
         }
 
+        userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         // Set row height for better readability
         userTable.setRowHeight(35);
 
@@ -233,20 +236,31 @@ public final class AdminDashboard extends JFrame implements ActionListener {
             }
 
         } else if (e.getSource() == logoutBtn) {
-            // Dispose the current frame
-            this.dispose();
+        
+            // Confirm deletion
+            boolean confirmed = CustomDialog.showConfirm(
+                    null,
+                    "Are you sure you want to log out?",
+                    "Logout Confirmation"
+            );
 
-            // Dispose any other open frames
-            if (addStaffFrame != null) {
-                addStaffFrame.dispose();
+            if (confirmed) {
+                // Dispose the current frame
+                this.dispose();
+
+                // Dispose any other open frames
+                if (addStaffFrame != null) {
+                    addStaffFrame.dispose();
+                }
+
+                if (addPatientFrame != null) {
+                    addPatientFrame.dispose();
+                }
+
+                // Open the login frame
+                new VitalPayLogin().setVisible(true);
             }
 
-            if (addPatientFrame != null) {
-                addPatientFrame.dispose();
-            }
-
-            // Open the login frame
-            new VitalPayLogin().setVisible(true);
         }
     }
 
@@ -338,7 +352,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
             editPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
             // Initialize buttons
-            editButton = createStyledButton(isStaffView ? "Edit": "Precribe");
+            editButton = createStyledButton(isStaffView ? "Edit": "Billing");
             archiveButton = createStyledButton("Archive");
 
             // Add buttons to the edit panel
@@ -350,16 +364,18 @@ public final class AdminDashboard extends JFrame implements ActionListener {
             archiveButton.addActionListener(e -> handleArchiveAction(currentRow));
 
             // Create render buttons
-            renderPanel.add(createStyledButton(isStaffView ? "Edit": "Prescribe", true));
+            renderPanel.add(createStyledButton(isStaffView ? "Edit": "Billing", true));
             renderPanel.add(createStyledButton("Archive", true));
         }
 
         private void handleEditAction(int row) {
+            String Id = userTable.getValueAt(row, 0).toString(); // Get the value in in column 0
+            
             if (isStaffView) {
                 System.out.println("Editing user at row: " + row);
             } else {
                 System.out.println("Editing patient at row: " + row);
-                new VitalPayPatientBilling().setVisible(true);
+                new VitalPayPatientBilling(Id).setVisible(true);
             }
 
             fireEditingStopped(); // Commit edit and close editor

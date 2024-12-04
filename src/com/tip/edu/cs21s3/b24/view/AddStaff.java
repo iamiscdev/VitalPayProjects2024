@@ -50,7 +50,7 @@ public class AddStaff extends JFrame {
         titlePanel.setBorder(BorderFactory.createEmptyBorder(35, 10, 20, 10));
 
         JLabel titleLabel = new JLabel("Staff Registration");
-        titleLabel.setFont(new Font("Poppins", Font.BOLD, 21));
+        titleLabel.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 21));
         titleLabel.setForeground(Constants.TEXT_COLOR);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titlePanel.add(titleLabel);
@@ -105,20 +105,7 @@ public class AddStaff extends JFrame {
         role.setPreferredSize(new Dimension(200, 30));
         role.setBackground(Constants.PRIMARY_COLOR); // Set background color of JComboBox to Teal
         role.setForeground(Constants.TEXT_COLOR);  // Set text color for items in JComboBox
-
-        // Customize the List (inside JComboBox)
-        role.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
-            @Override
-            protected JButton createArrowButton() {
-                JButton arrowButton = super.createArrowButton();
-                arrowButton.setBackground(Constants.PRIMARY_COLOR);  // Set arrow button background to match
-                return arrowButton;
-            }
-        });
-
-        // Set the divider color (line between items) to teal green
-        role.setBorder(BorderFactory.createLineBorder(Constants.PRIMARY_COLOR));
-
+        
         inputPanel.add(role);
 
         add(inputPanel, BorderLayout.CENTER);
@@ -134,7 +121,7 @@ public class AddStaff extends JFrame {
         savedetails.setBackground(Constants.PRIMARY_COLOR);
         savedetails.setForeground(Constants.TEXT_COLOR);
         savedetails.setFocusPainted(false);
-        savedetails.setFont(new Font("Poppins", Font.BOLD, 14));
+        savedetails.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         buttonPanel.add(savedetails);
 
         // Back Button
@@ -143,7 +130,7 @@ public class AddStaff extends JFrame {
         backButton.setBackground(Constants.SECONDARY_COLOR);
         backButton.setForeground(Constants.TEXT_COLOR);
         backButton.setFocusPainted(false);
-        backButton.setFont(new Font("Poppins", Font.BOLD, 14));
+        backButton.setFont(new Font(Constants.FONT_STYLE, Font.BOLD, 14));
         buttonPanel.add(backButton);
 
         add(buttonPanel, BorderLayout.SOUTH);

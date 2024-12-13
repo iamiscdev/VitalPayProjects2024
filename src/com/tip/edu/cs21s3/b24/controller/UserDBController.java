@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
@@ -381,7 +382,7 @@ public class UserDBController {
                     double totalCost = quantity * unitPrice;
 
                     // Add each row to the list
-                    patientData.add(new Object[]{drugCode, drugName, quantity, unitPrice, totalCost});
+                    patientData.add(new Object[]{drugCode, drugName, quantity, getDoublePlaces(unitPrice), getDoublePlaces(totalCost)});
                 }
             }
         } catch (SQLException e) {
@@ -457,7 +458,7 @@ public class UserDBController {
                     double testCost = rs.getDouble("test_cost");
 
                     // Add each row to the list
-                    patientData.add(new Object[]{testName, testDescription, testCost});
+                    patientData.add(new Object[]{testName, testDescription, getDoublePlaces(testCost)});
                 }
             }
         } catch (SQLException e) {
@@ -510,5 +511,10 @@ public class UserDBController {
             System.err.println("Error deleting patient prescription: " + e.getMessage());
             return false;
         }
+    }
+    
+    private String getDoublePlaces(double dp){
+        DecimalFormat df = new DecimalFormat("#0.00");
+        return df.format(dp);
     }
 }

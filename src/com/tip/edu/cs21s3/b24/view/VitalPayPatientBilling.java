@@ -19,6 +19,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import javax.swing.table.JTableHeader;
 
 public class VitalPayPatientBilling extends JFrame implements ActionListener {
@@ -130,7 +131,7 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         addDrugBtn.addActionListener(this);
         mainPanel.add(addDrugBtn);
 
-        removeDrugBtn = new JButton("Remove Drug");
+        removeDrugBtn = new JButton("Void Drug");
         removeDrugBtn.setBounds(150, 240, 150, 25);
         removeDrugBtn = styleButton(removeDrugBtn); // Apply button style
         removeDrugBtn.addActionListener(this);
@@ -169,7 +170,7 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         addTestBtn.addActionListener(this);
         mainPanel.add(addTestBtn);
 
-        removeTestBtn = new JButton("Remove Test");
+        removeTestBtn = new JButton("Void Test");
         removeTestBtn.setBounds(150, 470, 150, 25);
         removeTestBtn = styleButton(removeTestBtn); // Apply button style
         removeTestBtn.addActionListener(this);
@@ -256,23 +257,23 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
 
         // Add coverageLabel if the insurance provider is specified
         if (!patient.getInsuranceProvider().isEmpty()) {
-            coverageLabel = new JLabel(patient.getInsuranceProvider() + " Coverage: 0.0");
+            coverageLabel = new JLabel(patient.getInsuranceProvider() + " Coverage: 0.00");
             coverageLabel.setBounds(700, yPosition, 300, 25);
             mainPanel.add(coverageLabel);
             yPosition += 30; // Increment Y-position
         }
 
-        vatLabel = new JLabel("VAT: 0");
+        vatLabel = new JLabel("VAT: 0.00");
         vatLabel.setBounds(700, yPosition, 300, 25);
         mainPanel.add(vatLabel);
         yPosition += 30; // Increment Y-position
 
-        grossTotalLabel = new JLabel("Gross Total: 0.0");
+        grossTotalLabel = new JLabel("Gross Total: 0.00");
         grossTotalLabel.setBounds(700, yPosition, 300, 25);
         mainPanel.add(grossTotalLabel);
         yPosition += 30; // Increment Y-position
 
-        payableLabel = new JLabel("Payable Amount: 0.0");
+        payableLabel = new JLabel("Payable Amount: 0.00");
         payableLabel.setBounds(700, yPosition, 300, 25);
         mainPanel.add(payableLabel);
 
@@ -472,22 +473,22 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
                 double payableAmount = Math.max(0, grossTotal - coverage);
 
                 // Update labels
-                totalPrescriptionLabel.setText("Total Prescription Cost: " + totalPrescription);
-                totalDiagnosticsLabel.setText("Total Diagnostics Cost: " + totalDiagnostics);
+                totalPrescriptionLabel.setText("Total Prescription Cost: " + getDoublePlaces(totalPrescription));
+                totalDiagnosticsLabel.setText("Total Diagnostics Cost: " + getDoublePlaces(totalDiagnostics));
                 
                 if (patient.isWardRequired()) {
-                    totalRoomChargesLabel.setText("Total Room Charges: " + roomCharges);
+                    totalRoomChargesLabel.setText("Total Room Charges: " + getDoublePlaces(roomCharges));
                 }
                 
                 
-                vatLabel.setText("VAT: " + vat);
-                grossTotalLabel.setText("Gross Total: " + grossTotal);
+                vatLabel.setText("VAT: " + getDoublePlaces(vat));
+                grossTotalLabel.setText("Gross Total: " + getDoublePlaces(grossTotal));
                 
                 if (!patient.getInsuranceProvider().isEmpty()) {
-                    coverageLabel.setText(patient.getInsuranceProvider() + " Coverage: " + grossTotal);
+                    coverageLabel.setText(patient.getInsuranceProvider() + " Coverage: " + getDoublePlaces(grossTotal));
                 }
                 
-                payableLabel.setText("Payable Amount: " + payableAmount);
+                payableLabel.setText("Payable Amount: " + getDoublePlaces(payableAmount));
 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid input for room charges or days.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -502,17 +503,17 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
     }
 
     private void updatePrescriptionTotal() {
-        totalPrescriptionLabel.setText("Total Prescription Cost: " + calculatePrescriptionTotal());
+        totalPrescriptionLabel.setText("Total Prescription Cost: " + getDoublePlaces(calculatePrescriptionTotal()));
     }
 
     private void updateDiagnosticsTotal() {
-        totalDiagnosticsLabel.setText("Total Diagnostics Cost: " + calculateDiagnosticsTotal());
+        totalDiagnosticsLabel.setText("Total Diagnostics Cost: " + getDoublePlaces(calculateDiagnosticsTotal()));
     }
 
     private double calculatePrescriptionTotal() {
         double total = 0;
         for (int i = 0; i < prescriptionTableModel.getRowCount(); i++) {
-            total += (double) prescriptionTableModel.getValueAt(i, 4);
+            total += (double) Double.parseDouble((String) prescriptionTableModel.getValueAt(i, 4));
         }
         return total;
     }
@@ -520,7 +521,7 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
     private double calculateDiagnosticsTotal() {
         double total = 0;
         for (int i = 0; i < diagnosticsTableModel.getRowCount(); i++) {
-            total += (double) diagnosticsTableModel.getValueAt(i, 2);
+            total += (double) Double.parseDouble((String) diagnosticsTableModel.getValueAt(i, 2));
         }
         return total;
     }
@@ -541,7 +542,7 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
             };
             return rate * days;
         } else {
-            return 0.0;
+            return 0.00;
         }
     }
 
@@ -563,5 +564,10 @@ public class VitalPayPatientBilling extends JFrame implements ActionListener {
         } else {
             return 0;
         }
+    }
+    
+    private String getDoublePlaces(double dp){
+        DecimalFormat df = new DecimalFormat("#0.00");
+        return df.format(dp);
     }
 }

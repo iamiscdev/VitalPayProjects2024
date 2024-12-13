@@ -3,23 +3,35 @@ package com.tip.edu.cs21s3.b24.view;
 import com.tip.edu.cs21s3.b24.controller.UserDBController;
 import com.tip.edu.cs21s3.b24.dialog.CustomDialog;
 import com.tip.edu.cs21s3.b24.model.Constants;
+import com.tip.edu.cs21s3.b24.model.DateLabelFormatter;
 import com.tip.edu.cs21s3.b24.model.PatientModel;
 import com.tip.edu.cs21s3.b24.model.UserSession;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Properties;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.border.LineBorder;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 
 public class AddPatient extends JFrame implements ActionListener {
 
     private JButton saveBtn, backBtn;
     private JLabel tLabel, fnLabel, mnLabel, snLabel, numbLabel, dobLabel, addressLabel, bgLabel, genLabel, disLabel, symptomsLabel, diagnosisLabel, medicinesLabel, wardLabel, wardTypeLabel;
-    private JTextField fnField, mnField, snField, numbField, dobField, addressField, bgField, disField, symptomsField, diagnosisField, medicinesField, insuranceField, companyNameField, idCardField;
+    private JTextField fnField, mnField, snField, numbField, addressField, bgField, disField, symptomsField, diagnosisField, medicinesField, insuranceField, companyNameField, idCardField;
     private JRadioButton maleRadio, femaleRadio;
+    private JDatePickerImpl datePicker;
     private ButtonGroup genderGroup;
     private JCheckBox wardCheckBox;
     private JComboBox<String> wardTypeComboBox;
@@ -51,7 +63,7 @@ public class AddPatient extends JFrame implements ActionListener {
         add(createTitlePanel(), BorderLayout.PAGE_START);
         add(createFormPanel(), BorderLayout.CENTER);
 
-         // Prepopulate fields if editing
+        // Prepopulate fields if editing
         if (isEditing) {
             populateFields();
         }
@@ -133,11 +145,50 @@ public class AddPatient extends JFrame implements ActionListener {
         dobLabel.setBounds(50, 260, 100, 20);
         formPanel.add(dobLabel);
 
-        dobField = new JTextField("YYYY-MM-DD");
-        dobField.setPreferredSize(new Dimension(200, 30));
-        dobField.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
-        dobField.setBounds(150, 260, 150, 25);
-        formPanel.add(dobField);
+        // Create a date picker using JDatePicker
+        UtilDateModel model = new UtilDateModel();
+
+        if (!isEditing) {
+            // Set default date to today's date
+            LocalDate defaultDate = LocalDate.now(); // Using Java's LocalDate for simplicity
+            model.setDate(defaultDate.getYear(), defaultDate.getMonthValue() - 1, defaultDate.getDayOfMonth());
+            model.setSelected(true); // Mark this date as selected
+        } else {
+            try {
+                // Set default date from a String
+                String defaultDateString = patient.getDateOfBirth();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date defaultDate = dateFormat.parse(defaultDateString);
+                
+                // Extract year, month, and day from the Date
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(defaultDate);
+                
+                model.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+                model.setSelected(true); // Mark this date as selected
+            } catch (ParseException ex) {
+                Logger.getLogger(AddPatient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        Properties properties = new Properties();
+        properties.put("text.today", "Today");
+        properties.put("text.month", "Month");
+        properties.put("text.year", "Year");
+
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, properties);
+        datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+        datePicker.setBounds(150, 260, 150, 25);
+        datePicker.setBorder(new LineBorder(Constants.PRIMARY_COLOR, 1));
+        
+        // Access the button of the JDatePickerImpl
+        JButton calendarButton = (JButton) datePicker.getComponent(1);
+        calendarButton.setBackground(new Color(0, 150, 136)); // Set background color
+        calendarButton.setForeground(Color.WHITE);            // Set text color
+        calendarButton.setFont(new Font("Arial", Font.BOLD, 12)); // Set font
+        calendarButton.setBorder(BorderFactory.createLineBorder(new Color(0, 100, 90))); // Add border
+        calendarButton.setFocusable(false);
+        formPanel.add(datePicker);
 
         addressLabel = new JLabel("Address:");
         addressLabel.setBounds(50, 300, 100, 20);
@@ -310,7 +361,7 @@ public class AddPatient extends JFrame implements ActionListener {
         mnField.setText(patient.getMiddleName());
         snField.setText(patient.getLastName());
         numbField.setText(patient.getPhone());
-        dobField.setText(patient.getDateOfBirth());
+        //dobField.setText(patient.getDateOfBirth());
         addressField.setText(patient.getAddress());
         bgField.setText(patient.getBloodGroup());
         disField.setText(patient.getMajorDiseases());
@@ -328,7 +379,7 @@ public class AddPatient extends JFrame implements ActionListener {
         } else {
             femaleRadio.setSelected(false);
         }
-
+        
         // Show ward type controls if ward is required
         wardTypeLabel.setVisible(patient.isWardRequired());
         wardTypeComboBox.setVisible(patient.isWardRequired());
@@ -343,7 +394,8 @@ public class AddPatient extends JFrame implements ActionListener {
             String middleName = mnField.getText();
             String lastName = snField.getText();
             String phoneNumber = numbField.getText();
-            String dob = dobField.getText();
+            java.util.Date selectedDateStart = (java.util.Date) datePicker.getModel().getValue();
+            String dOfB = new java.sql.Date(selectedDateStart.getTime()).toString();
             String address = addressField.getText();
             String bloodGroup = bgField.getText();
             String diseases = disField.getText();
@@ -358,7 +410,7 @@ public class AddPatient extends JFrame implements ActionListener {
             boolean genderMale = maleRadio.isSelected();
             
             // Validate inputs
-            if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty() || dob.isEmpty()) {
+            if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty()) {
                 CustomDialog.showMessage(
                         this,
                         "Please fill in all required fields.",
@@ -380,6 +432,16 @@ public class AddPatient extends JFrame implements ActionListener {
                 }
             }
             
+            if (dOfB.isEmpty()) {
+                CustomDialog.showMessage(
+                            this,
+                            "Please select date of birth",
+                            "Warning",
+                            "warning"
+                    );
+                    return;
+            }
+            
              // Create the PatientModel object
                 PatientModel patient_ = new PatientModel(
                         isEditing ? patient.getPatientId() : generatePatientId(6) , // Generate a unique patient ID
@@ -387,7 +449,7 @@ public class AddPatient extends JFrame implements ActionListener {
                         middleName,
                         lastName,
                         phoneNumber,
-                        dob,
+                        dOfB,
                         address,
                         genderMale,
                         bloodGroup,

@@ -71,6 +71,7 @@ public final class AdminDashboard extends JFrame implements ActionListener {
 
         // Action listeners
         registerBtn.addActionListener(this);
+        reportBtn.addActionListener(this);
         addPatientBtn.addActionListener(this);
         logoutBtn.addActionListener(this);
         
@@ -259,6 +260,14 @@ public final class AdminDashboard extends JFrame implements ActionListener {
 
                 // Open the login frame
                 new VitalPayLogin().setVisible(true);
+            }
+
+        } else if (e.getSource() == reportBtn) {
+
+            // Open AddStaff and track the instance
+            if (addReportFrame == null || !addReportFrame.isShowing()) {
+                addReportFrame = new VitalPayReport();
+                addReportFrame.setVisible(true);
             }
 
         }
